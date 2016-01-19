@@ -1,0 +1,111 @@
+\documentclass[11pt, oneside]{article}
+\usepackage[letterpaper, margin=2cm]{geometry}
+\usepackage{Logemann}
+
+\begin{document}
+\noindent \textbf{\Large{Caleb Logemann \\
+MATH 517 Finite Difference Methods \\
+Homework 1
+}}
+
+\begin{enumerate}
+    \item % #1 
+        Consider a nonuniform grid $x_1 < x_2 < x_3 < x_4$.
+        Derive a finite difference approximation of $u''(x_2)$ that is as
+        accurate as possible for smooth functions $u(x)$, based on the four
+        values $U_1 = u(x_1)$, $U_2 = u(x_2)$, $U_3 = u(x_3)$, and
+        $U_4 = u(x_4)$.
+        Give an expression for the dominant term in the error.
+
+        First let $h_1 = x_2 - x_1$, $h_2 = x_3 - x_2$ and $h_3 = x_4 - x_3$.
+        In order to approximate $u''(x_2)$, we will use a linear combination of
+        $U_1, \ldots, U_4$, that is we will find coefficients
+        $\omega_1, \ldots, \omega_4$ such that
+        $\omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4 = u''(x_2) + E$,
+        where the error, $E$, is as small as possible.
+
+        $U_1, U_3,$ and $U_4$ can be expressed as Taylor expansions about $U_2$
+        as follows
+        \begin{align*}
+            U_1 &= u(x_1) = u(x_2) + u'(x_2)\p{-h_1} + \frac{1}{2} u''(x_2)
+                \p{-h_1}^2 + \frac{1}{6} u'''(x_2) \p{-h_1}^3 +
+                \frac{1}{24} u^{(4)}(c_1) \p{-h_1}^4 \\
+            U_3 &= u(x_1) = u(x_2) + u'(x_2)\p{h_2} + \frac{1}{2} u''(x_2)
+                \p{h_2}^2 + \frac{1}{6} u'''(x_2) \p{h_2}^3 +
+                \frac{1}{24} u^{(4)}(c_2) \p{h_2}^4 \\
+            U_4 &= u(x_1) = u(x_2) + u'(x_2)\p{h_2 + h_3} + \frac{1}{2} u''(x_2)
+                \p{h_2 + h_3}^2 + \frac{1}{6} u'''(x_2) \p{h_2 + h_3}^3 +
+                \frac{1}{24} u^{(4)}(c_3) \p{h_2 + h_3}^4
+        \end{align*}
+        where $c_1 \in \br{x_1, x_2}$, $c_2 \in \br{x_2, x_3}$, and
+        $c_3 \in \br{x_2, x_4}$.
+
+        Substituting these Taylor expansions into the linear combination and
+        gathering the function and derivative values of $u$ at $x_2$ results in
+        \begin{align*}
+            \omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4 &=
+                \p{\omega_1 + \omega_2 + \omega_3 + \omega_4} u(x_2) \\
+                &+ \p{-h_1 \omega_1 + h_2 \omega_3 + \p{h_2 + h_3} \omega_4} u'(x_2) \\
+                &+ \frac{1}{2}\p{h_1^2 \omega_1 + h_2^2 \omega_3 + \p{h_2 + h_3}^2 \omega_4} u''(x_2) \\
+                &+ \frac{1}{6}\p{-h_1^3 \omega_1 + h_2^3 \omega_3 + \p{h_2 + h_3}^3 \omega_4} u'''(x_2) \\
+                &+ \frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}
+        \end{align*}
+
+        Since there are four coefficients to set in the linear combination we can
+        specify up to 4 conditions on these coefficients to get the best possible
+        approximation of $u''(x_2)$.
+        These equations are as follows
+        \begin{align*}
+            \omega_1 + \omega_2 + \omega_3 + \omega_4 &= 0 \\
+            -h_1 \omega_1 + h_2 \omega_3 + \p{h_2 + h_3} \omega_4 &= 0 \\
+            h_1^2 \omega_1 + h_2^2 \omega_3 + \p{h_2 + h_3}^2 \omega_4 &= 2 \\
+            -h_1^3 \omega_1 + h_2^3 \omega_3 + \p{h_2 + h_3}^3 \omega_4 &= 0
+        \end{align*}
+        If these equations are satisfied, then
+        \begin{align*}
+            \omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4 &= u''(x_2) + \frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}
+        \end{align*}
+        where the approximation is $\omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4$
+        and the error is $\frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}$
+
+        Using Mathematica, this system of equations can be solved, to find that
+        the coefficients are
+        \begin{align*}
+            \omega_1 &= \frac{2\p{2 h_2 + h_3}}{h_1 \p{h_1 + h_2}\p{h_1 + h_2 + h+3}} \\
+            \omega_2 &= \frac{2h_1 - 4 h_2 - 2 h_3}{h_1 h_2^2 + h_1 h_2 h_3} \\
+            \omega_3 &= \frac{2\p{-h_1 + h_2 + h_3}}{h_2\p{h_1 + h_2} h_3} \\
+            \omega_4 &= \frac{2\p{h_1 - h_2}}{h_3\p{h_2 + h_3}\p{h_1 + h_2 + h_3}}
+        \end{align*}
+
+        Since $u$ is a smooth function, the error can be simplified using the
+        Intermediate Value Theorem, by noting that
+        \begin{align*}
+            \frac{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)}{h_1^4 \omega_1 + h_2^4 \omega_3} &= u^{(4)}(\rho) \\
+            h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2) &= \p{h_1^4 \omega_1 + h_2^4 \omega_3} u^{(4)}(\rho)
+        \end{align*}
+        for some $\rho \in \br{x_1, x_3}$.
+        Thus the error becomes
+        \begin{align*}
+            \frac{1}{24}\p{\p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}.
+        \end{align*}
+        The Intermediate Value Theorem can be used again to see that 
+        \begin{align*}
+            \frac{\p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}{h_1^4 \omega_1 + h_2^4 \omega_3 + \p{h_2 + h_3}^4 \omega_4} &= u^{(4)}(\mu) \\
+            \p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3) &= \p{h_1^4 \omega_1 + h_2^4 \omega_3 + \p{h_2 + h_3}^4 \omega_4} u^{(4)}(\mu)
+        \end{align*}
+        for $\mu \in \br{x_1, x_4}$.
+
+        The error can thus be written as
+        \begin{align*}
+            E &= \frac{1}{24}\p{h_1^4 \omega_1 + h_2^4 \omega_3 + \p{h_2 + h_3}^4 \omega_4} u^{(4)}(\mu).
+        \end{align*}
+        Substituting in for $\omega_1$, $\omega_3$, and $\omega_4$ and
+        simplifying results in
+        \begin{align*}
+            E &= -\frac{1}{12} \p{h_2\p{h_2 + h_3} - h_1 \p{2 h_2 + h_3}} u^{(4)}(\mu).
+        \end{align*}
+
+    \item
+\end{enumerate}
+
+\end{document}
