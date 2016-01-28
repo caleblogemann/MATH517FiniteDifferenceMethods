@@ -1,6 +1,7 @@
 \documentclass[11pt, oneside]{article}
 \usepackage[letterpaper, margin=2cm]{geometry}
 \usepackage{Logemann}
+\usepackage{Vector}
 
 \begin{document}
 \noindent \textbf{\Large{Caleb Logemann \\
@@ -105,7 +106,46 @@ Homework 1
             E &= -\frac{1}{12} \p{h_2\p{h_2 + h_3} - h_1 \p{2 h_2 + h_3}} u^{(4)}(\mu).
         \end{align*}
 
-    \item
+    \item % #2
+    \item % #3
+
+    \item % #4
+        Consider the following 2-pt BVP: 
+        \begin{align*}
+            u'' + u = f(x), \quad \text{on} \quad 0 \le x \le 10 \\
+            u'(0) - u(0) = 0, \quad u'(10) + u(10) = 0
+        \end{align*}
+        Construct a second order accurate finite-difference method for this BVP.
+        Write your method as a linear system in the form $A \v{u} = \v{f}$.
+
+        First the interval $\br{0, 10}$ needs to be discretized.
+        Let $x_0 = 0$, $x_{N + 1} = 10$, and let $x_{i} = ih$ for $1 \le i \le N$, 
+        where $h = \frac{10}{N+1}$.
+        Thus the interval $\br{0, 10}$ is described as a grid of $N+2$ equally
+        spaced points with grid spacing $h$.
+        Thus the solution to this BVP will be approximated on these grid points.
+        Let $U_i$ be the approximate value of $u(x_i)$.
+        Thus an approximate solution to this BVP will be the values of $U_i$ for
+        $0 \le i \le N+1$.
+
+        Based on the initial conditions be can find expressions for $U_0$ and
+        $U_{N+1}$.
+
+        In order that the finite-difference method is second order accurate, I
+        will use the second order central difference to approximate the second
+        derivative.
+        This finite difference is 
+        \begin{align*}
+            u''(x_i) \approx \frac{1}{h^2}\p{U_{i-1} - 2U_{i} + U_{i+1}}
+        \end{align*}
+        for $1 \le i \le N$.
+
+    \item % #5
+    \item % #6
+    \item % #7
+    \item % #8
+    \item % #9
+    \item % #10
 \end{enumerate}
 
 \end{document}
