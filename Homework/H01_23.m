@@ -48,4 +48,3 @@ hold on
 x = min(H):.01:max(H);
 y = exp(K)*x.^p;
 loglog(x,y);
-

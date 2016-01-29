@@ -10,7 +10,7 @@ Homework 1
 }}
 
 \begin{enumerate}
-    \item % #1 
+    \item % #1
         Consider a nonuniform grid $x_1 < x_2 < x_3 < x_4$.
         Derive a finite difference approximation of $u''(x_2)$ that is as
         accurate as possible for smooth functions $u(x)$, based on the four
@@ -89,7 +89,7 @@ Homework 1
         \begin{align*}
             \frac{1}{24}\p{\p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}.
         \end{align*}
-        The Intermediate Value Theorem can be used again to see that 
+        The Intermediate Value Theorem can be used again to see that
         \begin{align*}
             \frac{\p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}{h_1^4 \omega_1 + h_2^4 \omega_3 + \p{h_2 + h_3}^4 \omega_4} &= u^{(4)}(\mu) \\
             \p{h_1^4 \omega_1 + h_2^4 \omega_3}u^{(4)}(\rho)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3) &= \p{h_1^4 \omega_1 + h_2^4 \omega_3 + \p{h_2 + h_3}^4 \omega_4} u^{(4)}(\mu)
@@ -110,7 +110,7 @@ Homework 1
     \item % #3
 
     \item % #4
-        Consider the following 2-pt BVP: 
+        Consider the following 2-pt BVP:
         \begin{align*}
             u'' + u = f(x), \quad \text{on} \quad 0 \le x \le 10 \\
             u'(0) - u(0) = 0, \quad u'(10) + u(10) = 0
@@ -119,7 +119,7 @@ Homework 1
         Write your method as a linear system in the form $A \v{u} = \v{f}$.
 
         First the interval $\br{0, 10}$ needs to be discretized.
-        Let $x_0 = 0$, $x_{N + 1} = 10$, and let $x_{i} = ih$ for $1 \le i \le N$, 
+        Let $x_0 = 0$, $x_{N + 1} = 10$, and let $x_{i} = ih$ for $1 \le i \le N$,
         where $h = \frac{10}{N+1}$.
         Thus the interval $\br{0, 10}$ is described as a grid of $N+2$ equally
         spaced points with grid spacing $h$.
@@ -128,24 +128,185 @@ Homework 1
         Thus an approximate solution to this BVP will be the values of $U_i$ for
         $0 \le i \le N+1$.
 
-        Based on the initial conditions be can find expressions for $U_0$ and
+        Based on the boundary conditions be can find expressions for $U_0$ and
         $U_{N+1}$.
+        The first boundary condition states that
+        \begin{align*}
+            u'(0) - u(0) = 0
+        \end{align*}
+        We can approximate $u'(0)$ with a second order finite difference.
+        \begin{align*}
+            u'(0) \approx \frac{-\frac{1}{2}U_2 + 2U_1 - \frac{3}{2}U_0}{h}
+        \end{align*}
+        Thus the boundary condition can be rewritten in terms of the
+        discretization as follows
+        \begin{align*}
+            -\frac{1}{2}U_2 + 2U_1 - \frac{3}{2}U_0 - hU_0 &= 0 \\
+            U_0 &= \p{4U_1 - U_2} \frac{1}{3 + 2h}
+        \end{align*}
+        The second boundary condition can be similarly manipulated.
+        \begin{align*}
+            u'(10) + u(10) &= 0 \\
+            u'(10) &\approx  \frac{\frac{3}{2}U_{N+1} - 2U_N + \frac{1}{2}U_{N-1}}{h}\\
+            \frac{3}{2}U_{N+1} - 2U_N + \frac{1}{2}U_{N-1} + hU_{N+1} &= 0 \\
+            U_{N+1} &= \p{4U_N - U_{N-1}} \frac{1}{3 + 2h}
+        \end{align*}
 
+        Now that expressions for $U_0$ and $U_{N+1}$ have been found, we can
+        find $N$ equations for the remaining $N$ unkowns, $U_{i}$ for
+        $1 \le i \le N$.
         In order that the finite-difference method is second order accurate, I
         will use the second order central difference to approximate the second
         derivative.
-        This finite difference is 
+        This finite difference is
         \begin{align*}
             u''(x_i) \approx \frac{1}{h^2}\p{U_{i-1} - 2U_{i} + U_{i+1}}
         \end{align*}
         for $1 \le i \le N$.
 
+        This finite difference can then be used in the differential equation to
+        create $N$ equations as follows
+        \begin{align*}
+            \frac{1}{h^2}\p{U_{i-1} - 2U_{i} + U_{i+1}} + U_i &= f(x_i) \\
+            \frac{1}{h^2}\p{U_{i-1} + (-2 + h^2)U_{i} + U_{i+1}} &= f(x_i)
+        \end{align*}
+        for $2 \le i \le N - 1$.
+        For $i = 1$ and $i = N$, we need to substitute the expression for $U_0$
+        and $U_{N+1}$ respectively.
+        This results in
+        \begin{align*}
+            f(x_1) &= \frac{1}{h^2}\p{\p{4U_1 - U_2} \frac{1}{3 + 2h} - 2U_{1} + U_{2}} + U_1 \\
+            f(x_1) &= \frac{1}{h^2}\p{\p{\frac{4}{3 + 2h} - 2 + h^2}U_1 + \p{1-\frac{1}{3 + 2h}}U_2} \\
+            f(x_{N}) &= \frac{1}{h^2}\p{U_{N-1} - 2U_{N} + \p{4U_N - U_{N-1}} \frac{1}{3 + 2h}} + U_N \\
+            f(x_{N}) &= \frac{1}{h^2}\p{\p{1 - \frac{1}{3 + 2h}}U_{N-1} + \p{\frac{4}{3 + 2h} - 2 + h^2}U_{N}}
+        \end{align*}
+
+        These $N$ equations can be expressed as the matrix equation
+        \begin{align*}
+            A\v{u} &= \v{f}
+            \intertext{where}
+            \v{u} &= \br{U_1, U_2, \cdots, U_N}^T \\
+            \v{f} &= \br{f(x_1), f(x_2), \cdots, f(x_N)}^T \\
+            A &= \frac{1}{h^2}
+            \begin{bmatrix}
+                \frac{4}{3 + 2h} -2 + h^2 & 1 - \frac{1}{3 + 2h} & & &  \\
+                1 & -2 + h^2 & 1 & & \\
+                  & \ddots & \ddots & \ddots & \\
+                  &        & 1 & -2 + h^2 & 1 \\
+                  &        &   & 1 - \frac{1}{3 + 2h} & \frac{4}{3 + 2h} -2 + h^2 \\
+            \end{bmatrix}
+        \end{align*}
+        $A$ is a tridiagonal matrix, so all other entries are zero.
+        Therefore to approximate the solution solve the system $A\v{u} = \v{f}$ and
+        then plug in values for the expressions of $U_0$ and $U_{N+1}$.
+
     \item % #5
+        Construct the exact solution to the BVP with $f(x) = -e^x$.
+
+        This is a nonhomogenous ODE, so the solution to this BVP is found
+        by summing the solutions to the homogenous and nonhomogenous equations.
+        First I will begin by solving the homogenous version of the BVP, which
+        is
+        \begin{align*}
+            u'' + u = 0
+        \end{align*}
+        It is known that the general solution to this homogenous ODE is of the
+        form
+        \begin{align*}
+            u(x) &= a\sin{x} + b\cos{x} \\
+            u''(x) &= -a\sin{x} - b\cos{x}
+        \end{align*}
+        which clearly satisfies the homogenous ODE.
+
+        A solution to the nonhomogenous ODE can be found as well.
+        In this case the ODE is
+        \begin{align*}
+            u'' + u = -e^x
+        \end{align*}
+        I will guess that the solution is of the form
+        \begin{align*}
+            u(x) &= c_1 e^x + c_2 e^{-x} \\
+            u''(x) &= c_1 e^x + c_2 e^{-x}.
+            \intertext{Substituting this into the ODE results in}
+            2c_1 e^x + 2c_2 e^{-x} &= -e^x.
+            \intertext{Therefore}
+            c_1 &= -\frac{1}{2} \\
+            c_2 &= 0
+            \intertext{Thus the nonhomogenous solution is}
+            u(x) &= -\frac{1}{2}e^x
+        \end{align*}
+        Therefore the overall solution to this BVP is
+        \begin{align*}
+            u(x) &= -\frac{1}{2}e^x + a\sin{x} + b\cos{x}
+        \end{align*}
+
+        Finally we must find $a$ and $b$ such that $u(x)$ satisfies the
+        boundary conditions.
+        \begin{align*}
+            u'(x) &= -\frac{1}{2}e^x + a\cos{x} - b\sin{x} \\
+            u(0) &= -\frac{1}{2} + b \\
+            u'(0) &= -\frac{1}{2} + a \\
+            0 &= u'(0) - u(0) \\
+            &= -\frac{1}{2} + a + \frac{1}{2} - b \\
+            a &= b \\
+            u(10) &= -\frac{1}{2}e^{10} + a\sin{10} + b\cos{10} \\
+            u'(10) &= -\frac{1}{2}e^{10} + a\cos{10} - b\sin{10} \\
+            0 &= u'(10) + u(10) \\
+              &= -e^{10} + \p{\cos{10} + \sin{10}}a + \p{\cos{10} - \sin{10}}b
+            \intertext{Substituting in $a$ for $b$.}
+            0 &= -e^{10} + 2\cos{10}a \\
+            a &= \frac{e^{10}}{2\cos{10}} \\
+            b &= \frac{e^{10}}{2\cos{10}} \\
+        \end{align*}
+        Therefore the exact solution to the BVP is
+        \begin{align*}
+            u(x) &= -\frac{1}{2}e^x + \frac{e^{10}}{2\cos{10}}\p{\sin{x} + \cos{x}}
+        \end{align*}
+
     \item % #6
+
     \item % #7
+        Consider the following 2-point BVP:
+        \begin{align*}
+            -u'' + u = f(x), \quad \text{on} \quad 0 \le x \le 1 \\
+            u(0) = u(1) \quad u'(0) = u'(1)
+        \end{align*}
+        Construct a fourth-order accurate finite-difference method for this BVP
+        based on the fourth-order central finite difference.
+        Write your method as a linear system of the form $A\v{u} = \v{f}$.
+
+        First the interval $\br{0, 1}$ needs to be discretized.
+        Let $x_0 = 0$, $x_{N + 1} = 1$, and let $x_{i} = ih$ for $1 \le i \le N$,
+        where $h = \frac{1}{N+1}$.
+        Thus the interval $\br{0, 1}$ is described as a grid of $N+2$ equally
+        spaced points with grid spacing $h$.
+        Thus the solution to this BVP will be approximated on these grid points.
+        Let $U_i$ be the approximate value of $u(x_i)$.
+        Thus an approximate solution to this BVP will be the values of $U_i$ for
+        $0 \le i \le N+1$.
+
+        The boundary conditions are periodic, this implies that we can use the
+        following equalities
+        \begin{align*}
+            U_0 &= U_{N+1} \\
+            U_{-1} &= U_{N} \\
+            U_{-2} &= U_{N-1} \\
+            U_{N+2} &= U_1 \\
+        \end{align*}
+        The periodic boundary conditions reduces the number of unknowns from
+        $N+2$ to $N+1$, and it allows for the finite difference to be
+        used at all points $i = 0, 1, \ldots, N$.
+
+        In order that this method is fourth-order accurate, I will use the
+        fourth-order central difference to approximate the second derivative,
+        which is
+        \begin{align*}
+            u''(x_i) &\approx \frac{-U_{i-2} + 16U_{i-1} - 30U_i + 16U_{i+1} - U_{i+2}}{12h^2}
+        \end{align*}
+
+
     \item % #8
     \item % #9
     \item % #10
 \end{enumerate}
-
 \end{document}
