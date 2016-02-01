@@ -1,49 +1,46 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Problem 6
+% Problem 9
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% solving BVP u'' + u = f(x) for f(x) = -e^x
-% with BCs u'(0) - u(0) = 0 and u'(L) + u(L) = 0, where L = 10
+% solving BVP -u'' + u = f(x) for f(x) = sin(4pi x) on 0 \le x \le 1
+% with periodic BCs u(0) = u(1) and u'(0) = u'(1)
 
-L = 10;
-f = @(x) -exp(x);
+L = 1;
+f = @(x) sin(4*pi*x);
 
 % exact solution
-u = @(x) (-1/2)*exp(x) + (exp(L)/(2*cos(L)))*(sin(x) + cos(x));
+u = @(x) 1/(16*pi^2 + 1)*sin(4*pi*x);
 
 % create vector for storing errors at respective h values
 E = [];
 % N is number of interior point
-for N=[10, 20, 40, 80, 160, 320, 640, 1280, 2560, 5120]
+for N=[10, 20, 40, 80, 160, 320, 640, 1280]
     % find spacing
     h = L/(N+1);
 
     % create x grid and function values on grid
+    % x_0 to x_{N+1}
     x = 0:h:L;
-    fx = f(x(2:N+1))';
+    % leave out x_{N+1}
+    fx = f(x(1:end-1))';
 
     % create matrix A that solves the finite difference problem
-    e = ones(N, 1);
-    mid = (-2 + h^2)*e;
-    mid(1) = mid(1) + 4/(3 + 2*h);
-    mid(N) = mid(N) + 4/(3 + 2*h);
-    low = e;
-    low(end - 1) = 1 - 1/(3 + 2*h);
-    up = e;
-    up(2) = 1 - 1/(3 + 2*h);
-    A = 1/h^2 * spdiags([low, mid, up], -1:1, N, N);
+    e = ones(N+1, 1);
+    A = 1/(12*h^2) * spdiags([-16*e, e, e, -16*e, (30 + 12*h^2)*e, -16*e, e, e, -16*e], [-N, -N+1, -2:2, N-1, N], N+1, N+1);
     U = A\fx;
 
-    % add on first and last nodes, U_0 and U_{N+1}
-    U = [U(1)/(1 + h); U; U(end)/(1 + h)];
+    % add last node at x_{N+1}
+    % U_{N+1} = U_{0}
+    U = [U; U(1)];
 
-    % find exact solution
+    % compute exact solution
     ux = u(x)';
 
     % record error
     E = [E; h, norm(U - ux, inf)];
-    
+
+    % plot approximate and exact solution
     plot(x,ux, x,U);
-    pause;
+    %pause;
 end
 
 % show ratio of decrease in error

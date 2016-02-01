@@ -8,7 +8,7 @@ u2d = @(x) exp(x);
 
 % randomly generate h
 sz = [500,1];
-H = 100*rand(sz);
+H = exp(linspace(-7,2,500)');
 h1 = H.*rand(sz);
 h2 = H.*rand(sz);
 h3 = H.*rand(sz);
@@ -47,4 +47,11 @@ p = lsf(2);
 hold on
 x = min(H):.01:max(H);
 y = exp(K)*x.^p;
-loglog(x,y);
+loglog(x,y,'r', 'LineWidth', 3);
+set(gca, 'FontSize', 16);
+ylabel('Error');
+xlabel('H');
+title('H vs Error')
+
+p
+K

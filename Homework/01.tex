@@ -1,7 +1,6 @@
 \documentclass[11pt, oneside]{article}
 \usepackage[letterpaper, margin=2cm]{geometry}
-\usepackage{Logemann}
-\usepackage{Vector}
+\usepackage{MATH517}
 
 \begin{document}
 \noindent \textbf{\Large{Caleb Logemann \\
@@ -9,8 +8,9 @@ MATH 517 Finite Difference Methods \\
 Homework 1
 }}
 
+%\lstinputlisting[language=Matlab]{H01_23.m}
 \begin{enumerate}
-    \item % #1
+    \item % #1 Done
         Consider a nonuniform grid $x_1 < x_2 < x_3 < x_4$.
         Derive a finite difference approximation of $u''(x_2)$ that is as
         accurate as possible for smooth functions $u(x)$, based on the four
@@ -67,7 +67,8 @@ Homework 1
             \omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4 &= u''(x_2) + \frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}
         \end{align*}
         where the approximation is $\omega_1 U_1 + \omega_2 U_2 + \omega_3 U_3 + \omega_4 U_4$
-        and the error is $\frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}$
+        and the error is \\
+        $\frac{1}{24}\p{h_1^4 \omega_1 u^{(4)}(c_1) + h_2^4 \omega_3 u^{(4)}(c_2)+ \p{h_2 + h_3}^4 \omega_4 u^{(4)}(c_3)}$
 
         Using Mathematica, this system of equations can be solved, to find that
         the coefficients are
@@ -106,10 +107,27 @@ Homework 1
             E &= -\frac{1}{12} \p{h_2\p{h_2 + h_3} - h_1 \p{2 h_2 + h_3}} u^{(4)}(\mu).
         \end{align*}
 
-    \item % #2
-    \item % #3
+    \item % #2 Done
+    \item % #3 Done
+        The script for problems 2 and 3 is shown below with output shown after that.
+        \lstinputlisting[language=Matlab]{H01_23.m}
+        \begin{center}
+            \includegraphics[scale=.5]{Figures/01_1.eps}
+        \end{center}
+        \begin{verbatim}
+            >> H01_23
 
-    \item % #4
+            p =
+
+                2.0956
+
+
+            K =
+
+                -3.2838
+        \end{verbatim}
+
+    \item % #4 Done
         Consider the following 2-pt BVP:
         \begin{align*}
             u'' + u = f(x), \quad \text{on} \quad 0 \le x \le 10 \\
@@ -200,7 +218,7 @@ Homework 1
         Therefore to approximate the solution solve the system $A\v{u} = \v{f}$ and
         then plug in values for the expressions of $U_0$ and $U_{N+1}$.
 
-    \item % #5
+    \item % #5 Done
         Construct the exact solution to the BVP with $f(x) = -e^x$.
 
         This is a nonhomogenous ODE, so the solution to this BVP is found
@@ -263,9 +281,35 @@ Homework 1
             u(x) &= -\frac{1}{2}e^x + \frac{e^{10}}{2\cos{10}}\p{\sin{x} + \cos{x}}
         \end{align*}
 
-    \item % #6
+    \item % #6 Done
+        Verify that your method is second order accurate by solving the BVP with
+        $f(x) = -e^x$ for four different grid spacings $h$.
 
-    \item % #7
+        The script for solving this BVP is shown below.
+        \lstinputlisting[language=Matlab]{H01_6.m}
+        This outputs the following, which shows that as $h$ decreases by
+        a factor of $2$ the error decreases by a factor of $4$ which
+        shows that the method is of order $2$.
+        \begin{verbatim}
+            >> H01_6
+
+            ans = 
+
+                hRatios    errorRatios    order 
+                _______    ___________    ______
+
+                1.9091     3.6953         2.0214
+                1.9524     3.5994         1.9143
+                1.9756     3.7616         1.9458
+                1.9877     3.8869         1.9763
+                1.9938     3.9406         1.9873
+                1.9969     3.9697         1.9935
+                1.9984     3.9849         1.9968
+                1.9992     3.9924         1.9984
+                1.9996     3.9963         1.9992
+        \end{verbatim}
+
+    \item % #7 Done
         Consider the following 2-point BVP:
         \begin{align*}
             -u'' + u = f(x), \quad \text{on} \quad 0 \le x \le 1 \\
@@ -304,9 +348,116 @@ Homework 1
             u''(x_i) &\approx \frac{-U_{i-2} + 16U_{i-1} - 30U_i + 16U_{i+1} - U_{i+2}}{12h^2}
         \end{align*}
 
+        Therefore the finite difference equation for this differential equations
+        is
+        \begin{align*}
+            \frac{U_{i-2} - 16U_{i-1} + 30U_i - 16U_{i+1} + U_{i+2}}{12h^2} + U_i = f(x_i)
+        \end{align*}
+        for $i = 0, 1, \ldots, N$.
 
-    \item % #8
-    \item % #9
+        This is equivalent to the following matrix equation
+        \begin{align*}
+            A\v{u} &= \v{f}
+            \intertext{where}
+            \v{u} &= \br{U_0, U_1, \cdots, U_N}^T \\
+            \v{f} &= \br{f(x_0), f(x_1), \cdots, f(x_N)}^T \\
+            A &= \frac{1}{12h^2}
+            \begin{bmatrix}
+                30     & -16    & 1      &        & \cdots & 1      & -16 \\
+                -16    & 30     & -16    & 1      &        & \cdots & 1   \\
+                1      & -16    & 30     & -16    & 1      &        &     \\
+                \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots \\
+                       &        & 1      & -16    & 30     & -16    & 1   \\
+                1      & \cdots &        & 1      & -16    & 30     & -16 \\
+                -16    & 1      & \cdots &        & 1      & -16     & 30 \\
+            \end{bmatrix}
+        \end{align*}
+
+    \item % #8 Done
+        Construct an exact solution to the BVP for $f(x) = \sin{4\pi x}$.
+
+        As we have seen the exact solution to this BVP will be the sum of the
+        homogenous solution, $u_h$, and nonhomogenous solution, $u_n$, to this BVP.
+        The homogenous version of this BVP is
+        \begin{align*}
+            -u_h'' + u_h = 0.
+        \end{align*}
+        The solution to this ODE is of the form $u_h(x) = a\sin{x} + b\cos{x}$.
+
+        The nonhomogenous solution can be found as follows.
+        First I will guess that the solution is of the form
+        $u_n(x) = c_1 \sin{4\pi x} + c_2\cos{4 \pi x}$.
+
+        The constants in this function can be found by
+        plugging this function into the differential equation.
+        \begin{align*}
+            u_n''(x) &= -16 \pi^2 c_1 \sin{4\pi x} - 16 \pi^2 c_2 \cos{4 \pi x} \\
+            \sin{4 \pi x} &= -u_n''(x) + u_n(x) \\
+                          &= \p{16 \pi^2 + 1} c_1 \sin{4\pi x} + \p{16 \pi^2 + 1} c_2 \cos{4 \pi x}
+            \intertext{This results in the following two equations}
+            1 &= \p{16 \pi^2 + 1} c_1 \\
+            c_1 &= \frac{1}{16 \pi^2 + 1} \\
+            0 &= \p{16 \pi^2 + 1} c_2 \\
+            c_2 &= 0
+        \end{align*}
+        Thus the nonhomogenous solution to this BVP is
+        $u_n(x) = \frac{1}{16\pi^2 + 1} \sin{4\pi x}$.
+
+        Therefore the full solution is of the form
+        $u(x)=a\sin{x} + b\cos{x} + \frac{1}{16\pi^2 + 1} \sin{4\pi x}$.
+        Now we must select $a$ and $b$ to satisfy the periodic boundary conditions.
+
+        \begin{align*}
+            u(x) &= a\sin{x} + b\cos{x} + \frac{1}{16\pi^2 + 1} \sin{4\pi x} \\
+            u(0) &= b \\
+            u(1) &= a\sin{1} + b\cos{1} \\
+            u(0) &= u(1) \\
+            b    &= a\sin{1} + b\cos{1} \\
+            a    &= \p{\frac{1 - \cos{1}}{\sin{1}}}b \\
+            u'(x) &= a\cos{x} - b\sin{x} + \frac{4\pi}{16\pi^2 + 1} \cos{4\pi x} \\
+            u'(0) &= a + \frac{4\pi}{16\pi^2 + 1} \\
+            u'(1) &= a\cos{1} - b\sin{1} + \frac{4\pi}{16\pi^2 + 1} \\
+            u'(0) &= u'(1) \\
+            a + \frac{4\pi}{16\pi^2 + 1} &= a\cos{1} - b\sin{1} + \frac{4\pi}{16\pi^2 + 1} \\
+            a &= a\cos{1} - b\sin{1} \\
+            0 &= \p{\cos{1} - 1}a - b\sin{1}
+            \intertext{Substituting for $a$}
+            0 &= \p{\cos{1} - 1}\p{\frac{1 - \cos{1}}{\sin{1}}}b - \sin{1} b \\
+            0 &= \p{\frac{-\cos{1}^2 + 2\cos{1} - 1 - \sin{1}^2}{\sin{1}}} b \\
+            0 &= \p{\frac{2\cos{1} - 2}{\sin{1}}} b
+            \intertext{Since $\frac{2\cos{1} - 2}{\sin{1}} \neq 0$, then}
+            b &= 0
+            \intertext{Therefore}
+            a &= 0
+        \end{align*}
+        Thus the exact solution to the BVP is $u(x) = \frac{1}{16\pi^2 + 1} \sin{4\pi x}$.
+
+    \item % #9 Done
+        Verify that your method is fourth-order accurate by solving the BVP with
+        $f(x) = \sin{4\pi x}$ at four different grid spacings h.
+
+        \lstinputlisting[language=Matlab]{H01_9.m}
+        \begin{verbatim}
+            >> H01_9
+
+            ans = 
+
+                hRatios    errorRatios    order 
+                _______    ___________    ______
+
+                1.9091     12.309         3.8822
+                1.9524      14.18         3.9636
+                1.9756     15.132         3.9902
+                1.9877     15.581         3.9975
+                1.9938     15.794         3.9993
+                1.9969     15.898         3.9998
+                1.9984       14.9         3.9017
+        \end{verbatim}
+
     \item % #10
+        Prove that your method is consistent with truncation error
+        $\norm{\v{\tau}} = O(h^4)$ and $L_2$-stable, thereby proving that
+        your method converges at $O(h^4)$ in the $L_2$-norm.
+
 \end{enumerate}
 \end{document}
