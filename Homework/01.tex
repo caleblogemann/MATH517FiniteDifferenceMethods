@@ -351,7 +351,7 @@ Homework 1
         Therefore the finite difference equation for this differential equations
         is
         \begin{align*}
-            \frac{U_{i-2} - 16U_{i-1} + 30U_i - 16U_{i+1} + U_{i+2}}{12h^2} + U_i = f(x_i)
+            \frac{U_{i-2} - 16U_{i-1} + \p{30 + 12h^2}U_i - 16U_{i+1} + U_{i+2}}{12h^2} = f(x_i)
         \end{align*}
         for $i = 0, 1, \ldots, N$.
 
@@ -363,13 +363,13 @@ Homework 1
             \v{f} &= \br{f(x_0), f(x_1), \cdots, f(x_N)}^T \\
             A &= \frac{1}{12h^2}
             \begin{bmatrix}
-                30     & -16    & 1      &        & \cdots & 1      & -16 \\
-                -16    & 30     & -16    & 1      &        & \cdots & 1   \\
-                1      & -16    & 30     & -16    & 1      &        &     \\
+                30+12h^2 & -16    & 1      &        & \cdots & 1      & -16 \\
+                -16    & 30+12h^2 & -16    & 1      &        & \cdots & 1   \\
+                1      & -16    & 30+12h^2 & -16    & 1      &        &     \\
                 \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots \\
-                       &        & 1      & -16    & 30     & -16    & 1   \\
-                1      & \cdots &        & 1      & -16    & 30     & -16 \\
-                -16    & 1      & \cdots &        & 1      & -16     & 30 \\
+                       &        & 1      & -16    & 30+12h^2 & -16    & 1   \\
+                1      & \cdots &        & 1      & -16    & 30+12h^2 & -16 \\
+                -16    & 1      & \cdots &        & 1      & -16     & 30+12h^2 \\
             \end{bmatrix}
         \end{align*}
 
@@ -458,6 +458,55 @@ Homework 1
         Prove that your method is consistent with truncation error
         $\norm{\v{\tau}} = O(h^4)$ and $L_2$-stable, thereby proving that
         your method converges at $O(h^4)$ in the $L_2$-norm.
+
+        First I will prove that my method is consistent with fourth order
+        accuracy.
+        A method is considered consistent and fourth order accurate if the
+        norm of the truncation error approaches zero at the same rate as $h^4$.
+        The truncation error is defined as the difference between the 
+
+        In this case the truncation error is
+        \begin{align*}
+            \tau_i &= \frac{1}{12h^2}\p{u(x_{i-2}) - 16u(x_{i-1}) + \p{30 + 12h^2}u(x_i) - 16u(x_{i+1}) + u(x_{i+2})} - f(x_i)
+        \end{align*}
+        \begin{align*}
+            \intertext{This can be simplified using the following Taylor series}
+            u(x_{i-2}) &= u(x_i) - 2hu'(x_i) + 2h^2u''(x_i) - \frac{4}{3}h^3u'''(x_i) + \frac{2}{3}h^4u^{(4)}(x_i) - \frac{4}{15}h^5u^{(5)}(x_i) + \frac{4}{45}h^6u^{(6)}(c_{-2}) \\
+            -16u(x_{i-1}) &= -16 u(x_i) + 16hu'(x_i) - 8h^2u''(x_i) + \frac{8}{3}h^3u'''(x_i) - \frac{2}{3}h^4u^{(4)}(x_i) + \frac{2}{15}h^5u^{(5)}(x_i) - \frac{1}{45}h^6u^{(6)}(c_{-1}) \\
+            -16u(x_{i+1}) &= -16 u(x_i) - 16hu'(x_i) - 8h^2u''(x_i) - \frac{8}{3}h^3u'''(x_i) - \frac{2}{3}h^4u^{(4)}(x_i) - \frac{2}{15}h^5u^{(5)}(x_i) - \frac{1}{45}h^6u^{(6)}(c_{1}) \\
+            u(x_{i+2}) &= u(x_i) + 2hu'(x_i) + 2h^2u''(x_i) + \frac{4}{3}h^3u'''(x_i) + \frac{2}{3}h^4u^{(4)}(x_i) + \frac{4}{15}h^5u^{(5)}(x_i) + \frac{4}{45}h^6u^{(6)}(c_{2}) \\
+        \end{align*}
+        Adding these four Taylor series results in
+        \begin{align*}
+            u(x_{i-2}) - 16u(x_{i-1}) - 16u(x_{i+1}) + u(x_{i+2}) &= -30u(x_i) - 12 h^2 u''(x_i)  \\
+            &+ \frac{1}{45}h^6\p{4u^{(6)}(c_{-2}) - u^{(6)}(c_{-1}) - u^{(6)}(c_{1}) + 4u^{(6)}(c_{2})}
+            \intertext{The Intermediate Value Theorem can be used several times to simplify the final term}
+            u(x_{i-2}) - 16u(x_{i-1}) - 16u(x_{i+1}) + u(x_{i+2}) &= -30u(x_i) - 12 h^2 u''(x_i) + \frac{6}{45}h^6u^{(6)}(\mu)
+        \end{align*}
+        Plugging this expression back into the truncation error formula results in
+        \begin{align*}
+            \tau_i &= \frac{1}{12h^2}\p{\p{30 + 12h^2}u(x_i) -30u(x_i) - 12 h^2 u''(x_i) + \frac{6}{45}u^{(6)}(\mu)} - f(x_i) \\
+                   &= u(x_i) - u''(x_i) + \frac{1}{90}h^4u^{(6)}(\mu) - f(x_i)
+            \intertext{Since $u$ is a solution to the differential equation, $f(x_i) = -u''(x_i) + u(x_i)$}
+            \tau_i &= \frac{1}{90}h^4u^{(6)}(\mu)
+            \intertext{Therefore}
+            \tau_i &= O(h^4)
+        \end{align*}
+        This shows that our method is consistent and is fourth order accurate.
+
+        In order to show that our method is $L_2$ stable, we must show that
+        $\norm[2]{A^{-1}} \le C$.
+
+        Since $A$ is symmetric we know that
+        $\norm[2]{A^{-1}} = \rho(A^{-1}) = \frac{1}{\min{\lambda_i}}$, where
+        $\lambda_i$ are the eigenvalues of $A$.
+        To find the eigenvalues of $A$, we must first find the eigenfunctions
+
+        of the original BVP, that is we must find functions $v$ that satisfy
+        \begin{align*}
+            -v'' + v = \lambda v, \quad \text{on} \quad 0 \le x \le 1 \\
+            v(0) = 0 \quad v(1) = 0
+        \end{align*}
 
 \end{enumerate}
 \end{document}
