@@ -1,0 +1,84 @@
+\documentclass[11pt, oneside]{article}
+\usepackage[letterpaper, margin=2cm]{geometry}
+\usepackage{MATH517}
+
+\begin{document}
+\noindent \textbf{\Large{Caleb Logemann \\
+MATH 517 Finite Difference Methods \\
+Homework 2
+}}
+
+%\lstinputlisting[language=Matlab]{H01_23.m}
+\begin{enumerate}
+    \item % #1
+        Consider the 2-pt boundary value problem:
+        \begin{align*}
+            -u'' = f(x)\text{ on } 0 < x < L \\
+            u(0) = \alpha, \quad u'(L) = \sigma.
+        \end{align*}
+        Discretize this problem using the $O(h^2)$ central finite differences
+        and a ghost point near $x = L$ to handle the Neumann boundary condition.
+        Write out the resulting linear system.
+
+    \item % #2
+        Find the Green's function that satisfies:
+        \[
+            -G'' = \delta(x - \xi),\quad G(0;\xi) = 0,\quad G'(L;\xi) = 0.
+        \]
+
+    \item % #3
+        Use the result from Problem 2 to write out the exact solution to the
+        boundary value problem with general $f(x)$, $\alpha$, and $\sigma$.
+
+    \item % #4
+        Use the results from Problems 2 and 3 to find the exact inverse to the
+        finite difference matrix found in Problem 1.
+
+    \item % #5
+        Use the result in Problem 4 to prove that the finite difference method
+        in Problem 1 is $L_{\infty}$-stable.
+
+    \item % #6
+        Consider the uniform mesh $x_j = jh$ and let
+        \[
+            U_j = u(x_j) \quad \text{and} \quad W_j \approx u'(x_j).
+        \]
+        In standard finite differences, we typically find linear combinations
+        of $U_j$ to define the approximation $W_i$ to $u'(x_j)$:
+        \[
+            W_i = \sum*{j}{}{\beta_j U_j}
+        \]
+        In compact finite differences we are allowed to generalize this to
+        \[
+            \sum*{j}{}{\alpha_j W_j} = \sum*{j}{}{\beta_j U_j}
+        \]
+
+        Find the compact finite difference with the optimal local truncation
+        error that has the following form:
+        \[
+            \alpha W_{j-1} + W_j + \alpha W_{j+1} = \beta\p{\frac{U_{j+1} - U_{j-1}}{2h}}.
+        \]
+
+    \item % #7
+        Consider Poisson's equation in 2D:
+        \begin{align*}
+            -u_{xx} - u_{yy} = f(x,y)\text{ in }\Omega = \br{0,1} \times \br{0,1}, \\
+            u = g(x,y)\text{ on } \partial\Omega
+        \end{align*}
+        Discretize this equation using the 5-point Laplacian on a uniform mesh
+        $\Delta x = \Delta y = h$.
+        Use the standard natural row-wise ordering.
+
+    \item % #8
+        Write a MATLAB code that constructs the sparse coefficient matrix $A$
+        and the appropriate right hand side vector $\v{F}$.
+
+    \item % #9
+        Using your code, do a numerical convergence study for the following
+        right-hand side forcing and exact solution:
+        \[
+            f(x,y) = -1.25e^{x + .5y}\quad\text{and}\quad u(x,y) = e^{x + .5y}
+        \]
+        % use the backslash operator in MATLAB
+\end{enumerate}
+\end{document}
