@@ -508,5 +508,65 @@ Homework 1
             v(0) = 0 \quad v(1) = 0
         \end{align*}
 
+        This is equivalent to the ODE
+        \begin{align*}
+            -v'' = (\lambda - 1)v
+        \end{align*}
+        The general solution to this ODE is
+        \[
+            v(x) = a\sin{\sqrt{\lambda - 1}x} + b\cos{\sqrt{\lambda - 1}x}
+        \]
+        Based on the boundary condition $v(0) = 0$
+        \begin{align*}
+            0 &= a\sin{0} + b\cos{0} \\
+            b &= 0
+            \intertext{and by the boundary condition $v(1) = 0$}
+            0 &= a\sin{\sqrt{\lambda - 1}}
+            \intertext{To find nontrivial solutions implies that}
+            \sqrt{\lambda-1} &= n\pi \\
+            \lambda &= n^2 \pi^2 + 1
+        \end{align*}
+
+        Therefore the eigenvalues of this continuous problem are $n^2 \pi^2 + 1$
+        for $n = 1, 2, \ldots$, and the eigenfunctions are $v^p = \sin{p\pi x}$.
+
+        Therefore for the continuous problem I will guess that the eigenvectors
+        have the same form as the eigenvalues.
+        Thus I will quess that the eigenvectors, $\v{v}^p$ of $A$ has entries
+        $v^p_j = \sin{p\pi x_j} = \sin{p\pi jh}$, that is the eigenvectors
+        are the eigenfunctions sampled on the mesh.
+        To verify this we must compute the entries of $A\v{v}^p$.
+        The jth entry of $A\v{v}^p$ can be found as follows
+        \begin{align*}
+            \p{A\v{v}^p}_j &= \frac{1}{12h^2}\p{v^p_{j-2} - 16v^p_{j-1} + \p{30 + 12h^2}v^p_j - 16v^p_{j+1} + v^p_{j+2}} \\
+                           &= \frac{1}{12h^2}(\sin{p\pi(j-2)h} - 16\sin{p\pi(j-1)h} \\
+                           &+ \p{30 + 12h^2}\sin{p\pi jh} - 16\sin{p\pi(j+1)h} + \sin{p\pi(j+2)h})
+            \intertext{The following trigonometric identies can be used to simplify this expression}
+            \sin{p\pi(j-2)h} &= \sin{p\pi jh}\cos{2p\pi h} - \cos{p\pi jh}\sin{2p\pi h} \\
+            -16\sin{p\pi(j-1)h} &= -16\p{\sin{p\pi jh}\cos{p\pi h} - \cos{p\pi jh}\sin{p\pi h}} \\
+            -16\sin{p\pi(j+1)h} &= -16\p{\sin{p\pi jh}\cos{p\pi h} + \cos{p\pi jh}\sin{p\pi h}} \\
+            \sin{p\pi(j+2)h} &= \sin{p\pi jh}\cos{2p\pi h} + \cos{p\pi jh}\sin{2p\pi h}
+            \intertext{Substituting these identities in and simplifying results in}
+            \p{A\v{v}^p}_j &= \frac{1}{12h^2}\p{\p{30 + 12h^2}\sin{p\pi jh} + 2\sin{p\pi jh}\cos{2p\pi h} -32\sin{p\pi jh}\cos{p\pi h}} \\
+                           &= \frac{1}{12h^2}\p{30 + 12h^2 + 2\cos{2p\pi h} - 32\cos{p\pi h}}\sin{p\pi jh} \\
+                           &= \frac{1}{12h^2}\p{30 + 12h^2 + 2\cos{2p\pi h} - 32\cos{p\pi h}}v^p_j \\
+        \end{align*}
+        So this vector is indeed an eigenvector with eigenvalue
+        \begin{align*}
+            \lambda^p &= \frac{1}{12h^2}\p{30 + 12h^2 + 2\cos{2p\pi h} - 32\cos{p\pi h}}
+            \intertext{Doing a Taylor series expansion on this eigenvalue results in}
+            \lambda^p &\approx (1 + p^2 \pi^2) - \frac{1}{90}p^6 \pi^6 h^4 + O(h^6)
+            \min{\lambda^p} &= \lambda^1 \approx (1 + \pi^2) - \frac{1}{90} \pi^6 h^4 + O(h^6)
+        \end{align*}
+
+        Coming back to our initial problem, we now know that
+        \begin{align*}
+            \norm[2]{A^{-1}} &= \rho(A^{-1}) \\
+            &= \frac{1}{\lambda^1} \\
+            &\le \frac{1}{1 + pi^2}
+        \end{align*}
+        Therefore the $\norm[2]{A^{-1}}$ is bounded and out method is
+        $L_2$-stable.
+
 \end{enumerate}
 \end{document}
