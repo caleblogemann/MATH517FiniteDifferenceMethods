@@ -20,6 +20,9 @@ Homework 2
         and a ghost point near $x = L$ to handle the Neumann boundary condition.
         Write out the resulting linear system.
 
+        To discretize this problem let $x_i = ih$ where $h = \frac{L}{N + 1}$
+        and $N$ is the number of points in the discretization.
+
     \item % #2
         Find the Green's function that satisfies:
         \[
@@ -58,6 +61,31 @@ Homework 2
         \[
             \alpha W_{j-1} + W_j + \alpha W_{j+1} = \beta\p{\frac{U_{j+1} - U_{j-1}}{2h}}.
         \]
+
+        We can find the local truncation error by inserting the exact solution
+        into the finite difference equation and using Taylor series.
+        \begin{align*}
+            \tau_j &= -\alpha u'(x_{j-1}) - u'(x_j) - \alpha u'(x_{j+1}) + \beta\p{\frac{u(x_{j+1}) - u(x_{j-1})}{2h}} \\
+            u(x_{j-1}) &= u(x_j) - h u'(x_j) + \frac{h^2}{2} u''(x_j) - \frac{h^3}{6} u'''(x_j) + \frac{h^4}{24} u^{(4)}(x_j) - \frac{h^5}{120} u^{(5)}(x_j) + O(h^6) \\
+            u(x_{j+1}) &= u(x_j) + h u'(x_j) + \frac{h^2}{2} u''(x_j) + \frac{h^3}{6} u'''(x_j) + \frac{h^4}{24} u^{(4)}(x_j) + \frac{h^5}{120} u^{(5)}(x_j) + O(h^6) \\
+            u'(x_{j-1}) &= u'(x_j) - h u''(x_j) + \frac{h^2}{2} u'''(x_j) - \frac{h^3}{6} u^{(4)}(x_j) + \frac{h^4}{24} u^{(5)}(x_j) - \frac{h^5}{120} u^{(6)}(x_j) + O(h^6) \\
+            u'(x_{j+1}) &= u'(x_j) + h u''(x_j) + \frac{h^2}{2} u'''(x_j) + \frac{h^3}{6} u^{(4)}(x_j) + \frac{h^4}{24} u^{(5)}(x_j) + \frac{h^5}{120} u^{(6)}(x_j) + O(h^6)
+            \intertext{Substituting in these Taylor series and simplifying results in}
+            \tau_j &= (-1 - 2\alpha + \beta) u'(x_j) + \frac{h^2}{6} (-6 \alpha + \beta) u^{(3)}(x_j) + \frac{h^4}{120} (-10 \alpha + \beta) u^{(5)}(x_j)
+        \end{align*}
+        To make the local truncation error as small as possible, we must choose
+        $\alpha$ and $\beta$ such that the following two equations are satisfied.
+        \begin{align*}
+            0 &= -1 - 2\alpha + \beta \\
+            0 &= -6 \alpha + \beta
+        \end{align*}
+        If both of these equations are satisfied then this finite difference
+        will be a fourth order approximation.
+
+        \begin{align*}
+            
+        \end{align*}
+
 
     \item % #7
         Consider Poisson's equation in 2D:
