@@ -10,7 +10,7 @@ Homework 2
 
 %\lstinputlisting[language=Matlab]{H01_23.m}
 \begin{enumerate}
-    \item % #1
+    \item % #1 Done
         Consider the 2-pt boundary value problem:
         \begin{align*}
             -u'' = f(x)\text{ on } 0 < x < L \\
@@ -22,6 +22,59 @@ Homework 2
 
         To discretize this problem let $x_i = ih$ where $h = \frac{L}{N + 1}$
         and $N$ is the number of points in the discretization.
+        Thus the solution to this BVP will be approximated on these grid points.
+        Let $U_i$ be the approximate value of $u(x_i)$.
+        Thus an approximate solution to this BVP will be the values of $U_i$ for
+        $0 \le i \le N+1$.
+        From the boundary conditions, it can be noted that $U_0 = \alpha$.
+        The other boundary condition can be handled by introducing a ghost point
+        $U_{N+2}$ with the following two conditions
+        \begin{align*}
+            \frac{1}{h^2}\p{-U_{N} + 2U_{N+1} - U_{N+2}} &= f(x_{N+1}) = f(L)
+            \frac{1}{2h} \p{U_{N+2} - U_{N}} &= \sigma. \\
+        \end{align*}
+        In other words the central finite difference for the second derivative
+        must hold on $U_{N}$, $2_{N+1}$, and $U_{N+2}$, and the central
+        difference for the first derivative must equal $\sigma$ when centered
+        on $U_{N+1}$.
+        These two equations can be combined so that the ghost point $U_{N+2}$
+        no longer appears in our finite difference method.
+        \[
+            \frac{1}{h^2}\p{-2U_N + 2U_{N+1}} = f(x_{N+1}) + \frac{2\sigma}{h}
+        \]
+
+        Now instead of a system of $N$ equations for $i = 1, 2, \ldots, N$,
+        we have a system of $N+1$ equations for $i = 1, 2, \ldots, N+1$.
+        For $i = 2, \ldots, N$, the central finite difference can be applied
+        directly to the PDE to result in the following $N-1$ equations.
+        \[
+            \frac{1}{h^2}\p{-U_{i-1} + 2U_{i} - U_{i+1}} = f(x_i)
+        \]
+        For $i = 1$, we simply replace $U_0$ with $\alpha$ and simplify to
+        \[
+            \frac{1}{h^2}\p{2U_{1} - U_{2}} = f(x_1) + \frac{\alpha}{h^2}
+        \]
+        For $i = N + 1$, we use the equation we found before after removing
+        the ghost point.
+        \[
+            \frac{1}{h^2}\p{-2U_N + 2U_{N+1}} = f(x_{N+1}) + \frac{2\sigma}{h}
+        \]
+
+        Then this system of equations cen be written as a matrix equation as follows
+        \begin{align*}
+            A\v{U} &= \v{f} \\
+            \intertext{where}
+            \v{U} &= \br{U_1, U_2, \cdots, U_{N+1}}^T \\
+            \v{f} &= \br{f(x_1) + \frac{\alpha}{h^2}, f(x_2), \cdots, f(x_N), f(x_{N+1}) + \frac{2\sigma}{h}}^T \\
+            A &= \frac{1}{h^2}
+            \begin{bmatrix}
+                 2 & -1     &        &        &    \\
+                -1 &  2     & -1     &        &    \\
+                   & \ddots & \ddots & \ddots &    \\
+                   &        &     -1 &      2 & -1 \\
+                   &        &        &     -2 &  2 \\
+            \end{bmatrix}
+        \end{align*}
 
     \item % #2
         Find the Green's function that satisfies:
@@ -41,7 +94,7 @@ Homework 2
         Use the result in Problem 4 to prove that the finite difference method
         in Problem 1 is $L_{\infty}$-stable.
 
-    \item % #6
+    \item % #6 Done
         Consider the uniform mesh $x_j = jh$ and let
         \[
             U_j = u(x_j) \quad \text{and} \quad W_j \approx u'(x_j).
@@ -71,7 +124,7 @@ Homework 2
             u'(x_{j-1}) &= u'(x_j) - h u''(x_j) + \frac{h^2}{2} u'''(x_j) - \frac{h^3}{6} u^{(4)}(x_j) + \frac{h^4}{24} u^{(5)}(x_j) - \frac{h^5}{120} u^{(6)}(x_j) + O(h^6) \\
             u'(x_{j+1}) &= u'(x_j) + h u''(x_j) + \frac{h^2}{2} u'''(x_j) + \frac{h^3}{6} u^{(4)}(x_j) + \frac{h^4}{24} u^{(5)}(x_j) + \frac{h^5}{120} u^{(6)}(x_j) + O(h^6)
             \intertext{Substituting in these Taylor series and simplifying results in}
-            \tau_j &= (-1 - 2\alpha + \beta) u'(x_j) + \frac{h^2}{6} (-6 \alpha + \beta) u^{(3)}(x_j) + \frac{h^4}{120} (-10 \alpha + \beta) u^{(5)}(x_j)
+            \tau_j &= (-1 - 2\alpha + \beta) u'(x_j) + \frac{h^2}{6} (-6 \alpha + \beta) u^{(3)}(x_j) + \frac{h^4}{120} (-10 \alpha + \beta) u^{(5)}(x_j) + O(h^6)
         \end{align*}
         To make the local truncation error as small as possible, we must choose
         $\alpha$ and $\beta$ such that the following two equations are satisfied.
@@ -81,11 +134,25 @@ Homework 2
         \end{align*}
         If both of these equations are satisfied then this finite difference
         will be a fourth order approximation.
-
+        These two equations can be solved as follows.
         \begin{align*}
-            
+            \beta &= 6 \alpha \\
+            0 &= -1 -2 \alpha + 6 \alpha \\
+            1 &= 4 \alpha \\
+            \alpha &= \frac{1}{4} \\
+            \beta &= \frac{3}{2}
         \end{align*}
+        If $\alpha$ and $\beta$ are set to these values, then the local
+        truncation error becomes
+        \begin{align*}
+            \tau_j &= \frac{h^4}{120} (-10 \alpha + \beta) u^{(5)}(x_j) + O(h^6)
+        \end{align*}.
 
+        Thus the compact finite difference operator will be
+        \[
+            \frac{1}{4} W_{j-1} + W_j + \frac{1}{4} W_{j+1} = 3\p{\frac{U_{j+1} - U_{j-1}}{4h}}.
+        \]
+        which is 4th order accurate, because the local truncation error is $\tau = O(h^4)$.
 
     \item % #7
         Consider Poisson's equation in 2D:
@@ -96,6 +163,33 @@ Homework 2
         Discretize this equation using the 5-point Laplacian on a uniform mesh
         $\Delta x = \Delta y = h$.
         Use the standard natural row-wise ordering.
+
+        First we need to specify the discretization of the space $\Omega$.
+        Let $x_i = ih$ for $i = 0, 1, \ldots, N+1$ and let $y_j = jh$ for
+        $j = 0, 1, \ldots, N+1$, where $h = \frac{1}{N+1}$.
+        Then the solution to this PDE can be described by approximating u on
+        this mesh, that is $U_{i,j} \approx u(x_i, y_j)$ is an approximation
+        to the exact solution.
+
+        Now we can apply finite differences to this PDE.
+        The 5-point Laplacian on a uniform mesh is given by 
+        \[
+            \Delta u \approx \frac{1}{h^2}\p{U_{i-1,j} + U_{i+1,j} + U_{i,j-1} + U_{i,j+1} - 4U_{i,j}}.
+        \]
+        Using this finite difference in the PDE results in the following set
+        of equations
+        \[
+            \frac{1}{h^2}\p{4U_{i,j} - U_{i-1,j} - U_{i+1,j} - U_{i,j-1} - U_{i,j+1}} = f_{ij}$
+        \]
+        where $f_{ij} = f(x_i, y_j)$.
+
+        Now in order to turn this into a linear system, a new numbering scheme
+        needs to be imposed.
+        I will use the natural row-wise ordering where each point is numbered
+        along the rows starting at $U_{1,1} = U_1$.
+        In general $U_k = U_{i,j}$ when $k = i + (j-1)N$.
+
+        Using this numbering scheme
 
     \item % #8
         Write a MATLAB code that constructs the sparse coefficient matrix $A$
