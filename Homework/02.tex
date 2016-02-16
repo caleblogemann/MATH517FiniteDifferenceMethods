@@ -179,7 +179,7 @@ Homework 2
         Using this finite difference in the PDE results in the following set
         of equations
         \[
-            \frac{1}{h^2}\p{4U_{i,j} - U_{i-1,j} - U_{i+1,j} - U_{i,j-1} - U_{i,j+1}} = f_{ij}$
+            \frac{1}{h^2}\p{4U_{i,j} - U_{i-1,j} - U_{i+1,j} - U_{i,j-1} - U_{i,j+1}} = f_{ij}
         \]
         where $f_{ij} = f(x_i, y_j)$.
 
@@ -191,16 +191,39 @@ Homework 2
 
         Using this numbering scheme
 
-    \item % #8
+    \item % #8 Done
         Write a MATLAB code that constructs the sparse coefficient matrix $A$
         and the appropriate right hand side vector $\v{F}$.
 
-    \item % #9
+        The following function solves the 2D Poisson equations on
+        $[0,L] \times [0, L]$, with source function $f$, Dirichlet boundary
+        conditions $g$, and $N$ points in the x and y discretization.
+        \lstinputlisting[language=Matlab]{Poisson2D.m}
+
+    \item % #9 Done
         Using your code, do a numerical convergence study for the following
         right-hand side forcing and exact solution:
         \[
             f(x,y) = -1.25e^{x + .5y}\quad\text{and}\quad u(x,y) = e^{x + .5y}
         \]
         % use the backslash operator in MATLAB
+
+        The following code evaluates the function from the previous problem
+        for the given BVP.
+        \lstinputlisting[language=Matlab]{H02_9.m}
+        \begin{verbatim}
+            >> H02_9
+
+            ans = 
+
+                hRatios    errorRatios    order 
+                _______    ___________    ______
+
+                1.9091     3.6179         1.9886
+                1.9524     3.8055         1.9975
+                1.9756     3.9002         1.9989
+                1.9877     3.9498         1.9996
+                1.9938      3.975         1.9999
+        \end{verbatim}
 \end{enumerate}
 \end{document}

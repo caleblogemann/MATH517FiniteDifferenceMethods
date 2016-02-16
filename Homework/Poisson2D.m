@@ -65,21 +65,6 @@ function [U, Ux, Uy] = Poisson2D(f, g, L, N)
     jA = [jMain; jUpper; jLower; jU; jL];
     sA = [sMain; sUpper; sLower; sU; sL];
     A = sparse(iA, jA, sA);
-    %T = spdiags([-ones(N,1), 4*ones(N,1), -ones(N,1)], -1:1, N, N);
-    %I = speye(N);
-    %[iT, jT, sT] = find(T);
-    %
-    %A = sparse(N^2, N^2);
-    %for s = 1:N
-    %    % put T as diagonal block
-    %    A((s-1)*N+1:s*N,(s-1)*N+1:s*N) = T;
-    %    if(s > 1)
-    %        A((s-2)*N+1:(s-1)*N,(s-1)*N+1:s*N) = -I;
-    %    end
-    %    if(s < N)
-    %        A(s*N+1:(s+1)*N,(s-1)*N+1:s*N) = -I;
-    %    end
-    %end
 
     U = A\F';
 
