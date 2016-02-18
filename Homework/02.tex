@@ -1,6 +1,7 @@
 \documentclass[11pt, oneside, titlepage]{article}
 \usepackage[letterpaper, margin=2cm]{geometry}
 \usepackage{MATH517}
+\usepackage{Calculus}
 
 \title{MATH 517 Finite Differences Homework 2}
 \author{Caleb Logemann}
@@ -80,25 +81,105 @@
             \end{bmatrix}
         \end{align*}
 
-    \item % #2
+    \item % #2 Done
         Find the Green's function that satisfies:
         \[
             -G'' = \delta(x - \xi),\quad G(0;\xi) = 0,\quad G'(L;\xi) = 0.
         \]
 
-        
+        First we can see that integrating both sides over some interval $[a, b]$
+        results in
+        \begin{align*}
+            \dintt{a}{b}{-G''}{x} &= \dintt{a}{b}{\delta(x - \xi)}{x} \\
+            G'(a; \xi) - G'(b' \xi) &= \dintt{a}{b}{\delta(x - \xi)}{x}
+        \end{align*}
+        If either $a, b < \xi$ or $a, b > \xi$, then
+        $G'(a; \xi) - G'(b; \xi) = 0$.
+        Since this applies for any interval $[a, b]$ we can conclude that
+        $G'(a; \xi) = G'(b; \xi)$, and thus $G$ is piecewise linear before and
+        after $\xi$.
+        If $a < \xi < b$, then $G'(a; \xi) - G'(b; \xi) = 1$.
+        In particular $G'(L;\xi) = 0$, and since $G$ is linear $G'(b;\xi) = 0$
+        for and $b > \xi$.
+        Thus we can conclude that $G'(a; \xi) = 1$ for any $a < \xi$.
+        Also since $G(0;\xi) = 0$, we can conclude that $G(x;\xi) = x$ for
+        any $x < \xi$.
+        Since $G$ is continuous, $G(\xi; \xi) = \xi$.
+        Now since $G'(x; \xi) = 0$ for any $x > \xi$, we can conclude that
+        $G(x;\xi) = \xi$ for any $x > \xi$.
+        Now $G$ can be described in a piecewise fashion as follows
+        \begin{align*}
+            G(x; \xi) =
+            \begin{cases}
+                x & x \le \xi \\
+                \xi & x > \xi
+            \end{cases}
+        \end{align*}
 
-    \item % #3
+    \item % #3 Done
         Use the result from Problem 2 to write out the exact solution to the
         boundary value problem with general $f(x)$, $\alpha$, and $\sigma$.
 
-    \item % #4
+        First we must find the homogenous solution, that is we must find $u_1$
+        that satisfies $-u_1'' = 0$ and $u_1(0) = \alpha$ and $u_1'(L) = \sigma$.
+        The general solution to $-u_1'' = 0$ is $u_1(x) = mx + b$.
+        Using the boundary conditions we find that $u_1(x) = \sigma x + \alpha$.
+        Next we must find the nonhomogenous solution, that is we must find $u_2$
+        that satisfies $-u_2'' = f(x)$ and $u_2(0) = 0$ and $u_2'(L) = 0$.
+        \begin{align*}
+            -u_2'' &= f(x) \\
+            \dintt{0}{L}{-u_2'' G(x; \xi)}{x} &= \dintt{0}{L}{f(x)G(x; \xi)}{x} \\
+            u_2' &= f(\xi) \\
+            \dintt{0}{L}{u_2' G(x; \xi)}{\xi} &= \dintt{0}{L}{f(\xi)G(x;\xi)}{\xi} \\
+            u_2 &= \dintt{0}{L}{f(\xi)G(x;\xi)}{\xi}
+        \end{align*}
+
+        We find that $u_2(x) = \dintt{0}{L}{f(\xi)G(x;\xi)}{\xi}$.
+        Thus the exact solution to the entire problem is
+        \begin{align*}
+            u(x) &= u_1(x) + u_2(x) \\
+            &= \sigma x + \alpha + \dintt{0}{L}{f(\xi)G(x;\xi)}{\xi}.
+        \end{align*}
+
+    \item % #4 Done
         Use the results from Problems 2 and 3 to find the exact inverse to the
         finite difference matrix found in Problem 1.
 
-    \item % #5
+        The exact inverse of the matrix $A$ can be found by sampling the
+        Green's function on the mesh, that is $A^{-1}_{ij} = hG(x_i; x_j)$.
+        In a piecewise notation
+        \begin{align*}
+            A^{-1}_{ij} =
+            \begin{cases}
+                h \times ih & i \le j \\
+                h \times jh & i > j
+            \end{cases}
+        \end{align*}
+
+    \item % #5 Done
         Use the result in Problem 4 to prove that the finite difference method
         in Problem 1 is $L_{\infty}$-stable.
+
+        In order to prove that the finite difference method is
+        $L_{\infty}$-stable, it must be shown that the infinity norm
+        of $A^{-1}$ is bounded, that is that there exists some constant $C$
+        such that $\norm[\infty]{A^{-1}} \le C$.
+        First note that the infinity norm of a matrix is the maximum row sum
+        of that matrix, therefore
+        \begin{align*}
+            \norm[\infty]{A^{-1}} &= \max_{1 \le i \le N} \sum{j = 1}{N}{\abs{A^{-1}_{ij}}}
+            \intertext{From problem 4 we can see that $\abs{A^{-1}_{ij}} \le hL$,
+                since $ih < L$ and $jh < L$. Therfore}
+            \norm[\infty]{A^{-1}} &\le \max_{1 \le i \le N} \sum{j = 1}{N}{hL}
+            \intertext{Because this no longer depends on $i$ or $j$}
+            \norm[\infty]{A^{-1}} &\le NhL \\
+            &= N \frac{L}{N+1} L \\
+            &\le L^2
+        \end{align*}
+        Thus $\norm[\infty]{A^{-1}} \le L^2$, and since $L^2$ is constant the
+        infinity norm is bounded and finite difference method is $L_{\infty}$-stable.
+        The stability of this problem can then be coupled with the consistency
+        to show that this method is globally convergent.
 
     \item % #6 Done
         Consider the uniform mesh $x_j = jh$ and let
