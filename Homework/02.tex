@@ -1,12 +1,16 @@
-\documentclass[11pt, oneside]{article}
+\documentclass[11pt, oneside, titlepage]{article}
 \usepackage[letterpaper, margin=2cm]{geometry}
 \usepackage{MATH517}
 
+\title{MATH 517 Finite Differences Homework 2}
+\author{Caleb Logemann}
+
 \begin{document}
-\noindent \textbf{\Large{Caleb Logemann \\
-MATH 517 Finite Difference Methods \\
-Homework 2
-}}
+\maketitle
+%\noindent \textbf{\Large{Caleb Logemann \\
+%MATH 517 Finite Difference Methods \\
+%Homework 2
+%}}
 
 %\lstinputlisting[language=Matlab]{H01_23.m}
 \begin{enumerate}
@@ -82,6 +86,8 @@ Homework 2
             -G'' = \delta(x - \xi),\quad G(0;\xi) = 0,\quad G'(L;\xi) = 0.
         \]
 
+        
+
     \item % #3
         Use the result from Problem 2 to write out the exact solution to the
         boundary value problem with general $f(x)$, $\alpha$, and $\sigma$.
@@ -154,7 +160,7 @@ Homework 2
         \]
         which is 4th order accurate, because the local truncation error is $\tau = O(h^4)$.
 
-    \item % #7
+    \item % #7 Done
         Consider Poisson's equation in 2D:
         \begin{align*}
             -u_{xx} - u_{yy} = f(x,y)\text{ in }\Omega = \br{0,1} \times \br{0,1}, \\
@@ -189,7 +195,40 @@ Homework 2
         along the rows starting at $U_{1,1} = U_1$.
         In general $U_k = U_{i,j}$ when $k = i + (j-1)N$.
 
-        Using this numbering scheme
+        Using this numbering scheme, the finite difference method turn into the
+        following linear system.
+        \begin{align*}
+            A\v{U} &= \v{f}
+            \intertext{$A \in \RR^{N^2 \times N^2}$ is the block matrix}
+            A &=
+            \begin{bmatrix}
+                T  & -I     &        &        &    \\
+                -I &  T     & -I     &        &    \\
+                   & \ddots & \ddots & \ddots &    \\
+                   &        &     -I &      T & -I \\
+                   &        &        &     -I &  T
+            \end{bmatrix} \\
+            T &= 
+            \begin{bmatrix}
+                4  & -1     &        &        &    \\
+                -1 &  4     & -1     &        &    \\
+                   & \ddots & \ddots & \ddots &    \\
+                   &        &     -1 &      4 & -1 \\
+                   &        &        &     -1 &  4
+            \end{bmatrix}
+            \intertext{and $I$ is the $N \times N$ identity matrix}
+            \v{f} &=
+            \begin{bmatrix}
+                h^2 f(x_1, y_1) + g(x_1,y_0) + g(x_0, y_1)\\
+                h^2 f(x_2, y_1) + g(x_2, y_0) \\
+                \vdots   \\
+                h^2 f(x_{N-1}, y_N) + g(x_{N-1}, y_{N+1})  \\
+                h^2 f(x_N, y_N) + g(x_{N+1}, y_N) + g(x_N, y_{N+1})
+            \end{bmatrix}
+        \end{align*}
+        For the vector $\v{f}$ the boundary conditions are present for any
+        index $k$ that appears on the boundary of the mesh, otherwise
+        the entry of $\v{f}$ is simply $h^2 f(x_i, y_j)$.
 
     \item % #8 Done
         Write a MATLAB code that constructs the sparse coefficient matrix $A$
