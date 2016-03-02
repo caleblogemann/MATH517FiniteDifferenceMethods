@@ -5,8 +5,10 @@ for N = [19, 39]
     USquare = vec2mat(U,N);
     figure;
     surf(vec2mat(Ux, N), vec2mat(Uy, N), USquare);
+    title(['f = 1, N = ',num2str(N)])
     figure
     pcolor(USquare);
+    title(['f = 1, N = ',num2str(N)])
 end
 
 % Problem 7
@@ -16,8 +18,10 @@ for N = [19, 39]
     USquare = vec2mat(U,N);
     figure;
     surf(vec2mat(Ux, N), vec2mat(Uy, N), USquare);
+    title(['f = 2*exp(-(10*x - 5).^2 - (10*y - 5).^2), N = ',num2str(N)])
     figure
     pcolor(USquare);
+    title(['f = 2*exp(-(10*x - 5).^2 - (10*y - 5).^2), N = ',num2str(N)])
 end
 
 % Problem 8 and 9
