@@ -8,7 +8,7 @@ function [U, Ux, Uy, A] = Poisson2D_5PointLaplacian_IrregularGeometry(f, L, N)
     h = L/(N+1);
     x = 0:h:L;
     y = 0:h:L;
-    m = ceil(N/2);
+    m = ceil(N/2); % N = 2m + 1
 
     % indices not in geometry
     indices = N*(floor((0:m^2-1)/m) + N-m) + mod(0:m^2-1,m) + 1;
