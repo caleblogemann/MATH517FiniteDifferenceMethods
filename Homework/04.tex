@@ -286,6 +286,41 @@
                 \end{center}
 
         \end{enumerate}
+
     \item % #4
+        \begin{enumerate}
+            \item[(a)]
+                ON the attached mathematica printout it is shown that this
+                method for $f(u) = \lambda u$, that this method is equivalent
+                to
+                \[
+                    U^{n+1} = \p{\frac{12 + 6 k\lambda + (k\lambda)^2}{12 - 6k\lambda + (k\lambda)^2}}U^n.
+                \]
+                This is equivalent to
+                \[
+                    U^{n+1} = e^{k \lambda} U^n - \frac{(k \lambda)^5}{720} + O(k^6).
+                \]
+                Thus the one-step error is order $k^5$, and the local
+                truncation error is order $k^4$.
+
+
+            \item[(b)]
+                    We showed in part (a) that the stability function was
+                    $R(z) = \frac{12 + 6z + z^2}{12 - 6z + z^2}$.
+                    In order for this method to be A-stable $\abs{R(z)} \le 1$
+                    for all $z$ such that $\operatorname{Re}(z) \le 1$.
+
+                    From the picture on the mathematica printout we can see that this
+                    condition is satisfied, so this method is A-stable.
+
+            \item[(c)]
+                This method is not L-stable because the limit of $R(z)$ as
+                $z \to \infty$ along the real axis is 1.
+                In other words
+                \[
+                    \lim{z \to \infty}{R(z)} = 1.
+                \]
+                Thus this method is not L-stable.
+        \end{enumerate}
 \end{enumerate}
 \end{document}
