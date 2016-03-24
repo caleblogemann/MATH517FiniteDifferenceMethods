@@ -1,0 +1,149 @@
+\documentclass[11pt, oneside, titlepage]{article}
+\usepackage[letterpaper, margin=2cm]{geometry}
+\usepackage{MATH517}
+\usepackage{Calculus}
+
+\title{MATH 517 Finite Differences Homework 4}
+\author{Caleb Logemann}
+
+\begin{document}
+\maketitle
+
+%\lstinputlisting[language=Matlab]{H01_23.m}
+\begin{enumerate}
+    \item % #1
+        Consider the Leapfrog method
+        \[
+            U^{n+1} = U^{n−1} + 2k f(U^n)
+        \]
+        applied to the test problem $u′ = \lambda u$.
+        The method is zero-stable and second order accurate, and hence convergent.
+        If $\lambda < 0$ then the true solution is exponentially decaying.
+
+        On the other hand, for $\lambda < 0$ and $k > 0$ the point $z = k\lambda$ is never in the
+        region of absolute stability of this method,
+        and hence the numerical solution should be growing exponentially for any
+        nonzero time step.
+        (And yet it converges to a function that is exponentially decaying.)
+
+        Suppose we take $U^0 = \eta$, use Forward Euler to generate $U^1$, and
+        then use the midpoint method for $n = 2, 3, \cdots$.
+        Work out the exact solution $U^n$ by solving the linear difference
+        equation and explain how the apparent paradox described above is resolved
+
+        We know that $U^0 = \eta$ and
+        $U^1 = U^0 + k \lambda U^0 = (1 + k\lambda)\eta$ by the Euler method.
+        We also know that the solution is governed by the difference equation
+        \[
+            U^{n+1} - 2k\lambda U^n - U^{n-1} = 0
+        \]
+        We know that solutions to this difference equation are solutions of the
+        following equation
+        \[
+            \zeta^2 - 2k\lambda \zeta - 1 = 0
+        \]
+
+    \item % #2 Done
+        \begin{enumerate}
+            \item[(a)]
+                Find the general solution of the linear difference equation
+                \[
+                    U^{n+3} + 2U^{n+2} - 4U^{n + 1} - 8U^n = 0
+                \]
+
+                The general solution of the linear difference equation can be
+                found by finding the roots of the following polynomial.
+                \[
+                    \zeta^3 + 2\zeta^2 - 4\zeta - 8
+                \]
+                This polynomial factors to
+                \[
+                    (\zeta - 2)(\zeta + 2)^2
+                \]
+                Thus the general solution to this linear difference equation is
+                \[
+                    U^n = c_1 2^n + c_2 (-2)^n + c_3 n (-2)^n
+                \]
+
+            \item[(b)]
+                Determine the particular solution with initial data $U_0 = 4$,
+                $U_1 = -2$, and $U_2 = 8$.
+
+                The particular solution can be found as follows.
+                \begin{align*}
+                    U^0 &= 4 = c_1 + c_2 \\
+                    c_1 &= 4 - c_2 \\
+                    U^1 &= -2 = 2 c_1 - 2 c_2 - 2c_3 \\
+                    -2 &= 2(4 - c_2) - 2 c_2 - 2 c_3 \\
+                    -10 + 4 c_2 &= -2 c_3 \\
+                    c_3 &= 5 - 2 c_2
+                    U^2 &= 8 = 4c_1 + 4c_2 + 8c_3 \\
+                    8 &= 4(4 - c_2) + 4c_2 + 8(5 - 2c_2) \\
+                    8 &= 16 - 4c_2 + 4c_2 + 40 - 16c_2 \\
+                    -48 &= -16c_2 \\
+                    c_2 &= 3 \\
+                    c_1 &= 1 \\
+                    c_3 &= -1 
+                \end{align*}
+                Thus the particular solution is $U^n = 2^n + (3 - n)(-2)^n$.
+
+            \item[(c)]
+                Consider the iteration:
+                \[
+                    \begin{bmatrix}
+                        U^{n+1} \\
+                        U^{n+2} \\
+                        U^{n+3}
+                    \end{bmatrix}
+                    =
+                    \begin{bmatrix}
+                        0 & 1 & 0 \\
+                        0 & 0 & 1 \\
+                        8 & 4 & 2
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                        U^n \\
+                        U^{n+1} \\
+                        U^{n+2}
+                    \end{bmatrix}
+                \]
+                The matrix appearing here is the companion matrix for the
+                difference equation.
+                If this matrix is called $A$, then we can determine $U^n$ from
+                the starting values if we know $A^n$, the nth power of $A$.
+                If $A = R\Lambda R^{-1}$ is the Jordan Canonical form for the
+                matrix, then $A^n = R\Lambda^n R^{-1}$.
+                Determine the eigenvalues and Jordan canonical form for this
+                matrix and show how this is related to the general solution
+                found in (a).
+                The eigenvalues of $A$ can be found by solving the following
+
+                equation
+                \begin{align*}
+                    \det(A - \lambda I) &= 0
+                    -\lambda^3 - 2\lambda^2 + 4\lambda + 8 &= 0
+                \end{align*}
+                This equation has the same solutions as the root of the
+                polynomial in part (a).
+                Therefore the eigenvalues are $\lamba = 2, -2, -2$.
+                The Jordan Cononical form of $A$ is
+                \[
+                    \Lambda =
+                    \begin{bmatrix}
+                        2 & 0 & 0 \\
+                        0 & -2 & 1 \\
+                        0 & 0 & -2
+                    \end{bmatrix}
+                \]
+                The eigenvalues correspond directly roots of the characteristic
+                polynomial of the lienar difference equation.
+        \end{enumerate}
+
+    \item % #3
+        Write a MATLAB script to plot the region of absolute stability of the
+        4-stage Runge-Kutta method. (See example 5.13 on Page 126)
+
+    \item % #4
+
+\end{enumerate}
+\end{document}
