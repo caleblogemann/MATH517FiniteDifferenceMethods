@@ -43,6 +43,35 @@
             \zeta^2 - 2k\lambda \zeta - 1 = 0
         \]
 
+        Using the quadractic formula solutions to this equation can be found
+        \begin{align*}
+            \zeta &= \frac{2k\lambda \pm \sqrt{4(k\lambda)^2 - 4(1)(-1)}}{2} \\
+                  &= k\lambda \pm \sqrt{(k\lambda)^2 + 1} \\
+        \end{align*}
+
+        This implies that the general solution to the linear difference
+        equation is of the form
+        \[
+            U^n = c_1(k\lambda + \sqrt{(k\lambda)^2 + 1})^n + c_2(k\lambda - \sqrt{(k\lambda)^2 + 1})^n
+        \]
+
+        Using the initial conditions that $U^0 = \eta$ and
+        $U^1 = (1 + k\lambda)\eta$, it is possible to solve for the constants
+        $c_1$ and $c_2$.
+
+        \begin{align*}
+            \eta &= c_1 + c_2 \\
+            c_2 &= \eta - c_1 \\
+            (1 + k\lambda)\eta &= c_1(k\lambda + \sqrt{(k\lambda)^2 + 1}) + c_2(k\lambda - \sqrt{(k\lambda)^2 + 1}) \\
+            (1 + k\lambda)\eta &= c_1(k\lambda + \sqrt{(k\lambda)^2 + 1}) + (\eta - c_1)(k\lambda - \sqrt{(k\lambda)^2 + 1}) \\
+            (1 + k\lambda)\eta &=  2c_1\sqrt{(k\lambda)^2 + 1} + \eta(k\lambda - \sqrt{(k\lambda)^2 + 1}) \\
+            c_1 &= \frac{\eta(1 + \sqrt{(k\lambda)^2 + 1})}{2\sqrt{(k\lambda)^2 + 1}} \\
+            c_1 &= \frac{\eta(\sqrt{(k\lambda)^2 + 1} + (k\lambda)^2 + 1)}{2(k\lambda)^2 + 2} \\
+            c_2 &= \eta - \frac{\eta(\sqrt{(k\lambda)^2 + 1} + (k\lambda)^2 + 1)}{2(k\lambda)^2 + 2} \\
+            c_2 &= \eta\frac{(k\lambda)^2 + 1 -\sqrt{(k\lambda)^2 + 1}}{2(k\lambda)^2 + 2} \\
+        \end{align*}
+
+
     \item % #2 Done
         \begin{enumerate}
             \item[(a)]
@@ -125,7 +154,7 @@
                 \end{align*}
                 This equation has the same solutions as the root of the
                 polynomial in part (a).
-                Therefore the eigenvalues are $\lamba = 2, -2, -2$.
+                Therefore the eigenvalues are $\lambda = 2, -2, -2$.
                 The Jordan Cononical form of $A$ is
                 \[
                     \Lambda =
@@ -143,11 +172,90 @@
         Write a MATLAB script to plot the region of absolute stability of the
         4-stage Runge-Kutta method. (See example 5.13 on Page 126)
 
+        I chose to use Mathematica instead to plot the region of absolute
+        stability with the following script.
+        \begin{verbatim}
+Y1 = Un;
+Y2 = Un + 1/2 k L Y1;
+Y3 = Un +1/2 k L (Y2);
+Y4 = Un + k L(Y3);
+Un1 = Un + 1/6 k L(Y1 + 2(Y2) + 2(Y3) +Y4)//FullSimplify//Expand
+
+Un+k Un L+1/2 k^2 Un L^2+1/6 k^3 Un L^3+1/24 k^4 Un L^4
+
+(1 + k L + 1/2 (k L)^2 + 1/6 (k L)^3 + 1/24 (k L)^4)Un
+
+p[z_]:=1 + z + 1/2 z^2 + 1/6 z^3 + 1/24 z^4
+RegionPlot[Abs[p[x + I y]]<=1,{x,-5,5},{y,-5,5},Axes->True,Frame->False]
+        \end{verbatim}
         \begin{center}
             \includegraphics[scale=.5]{Figures/05_3.png}
         \end{center}
 
     \item % #4
+        \begin{enumerate}
+            \item[(a)]
+                We know that the stages of a Runge-Kutta method can be
+                expressed as
+                \begin{align*}
+                    Y_i &= f(t_n + c_i h, U^n + k\sum{j = 1}{s}{a_{ij} Y_j}) \\
+                    Y_i &= \lambda(U^n + k\sum{j = 1}{s}{a_{ij} Y_j})
+                    \intertext{Note that the summation is equivalent to a
+                    matrix product, that is $\sum{j = 1}{s}{a_{ij} Y_j} = (A\v{Y})_i$, therefore}
+                    Y_i &= \lambda(U^n + k(A\v{Y})_i)
+                    \intertext{If every entry is structured this way the equivalent vector equation is}
+                    \v{Y} &= \lambda U^n \v{e} + k\lambda A\v{Y}
+                    \intertext{This vector equation can be solved for $\v{Y}$}
+                    \v{Y} - k\lambda A\v{Y} &=\lambda U^n \v{e} \\ 
+                    (I - k\lambda A)\v{Y} &= \lambda U^n \v{e} \\
+                    \v{Y} &= (I - k\lambda A)^{-1} \lambda U^n \v{e}
+                    \intertext{Letting $z = k\lambda$}
+                    \v{Y} &= \lambda U^n (I - z A)^{-1} \v{e}
+                \end{align*}
+
+            \item[(b)]
+                The actual timestep to calculate $U^{n+1}$ has the following formula.
+                \begin{align*}
+                    U^{n+1} &= U^n + k\sum{i = 1}{s}{b_i Y_i}
+                    \intertext{Since $\sum{i = 1}{s}{b_i Y_i} = \v{b}^T \v{Y}$}
+                    U^{n+1} &= U^n + k\v{b}^T\v{Y} 
+                    \intertext{Using part (a)}
+                    U^{n+1} &= U^n + k\v{b}^T \lambda U^n (I - z A)^{-1} \v{e} \\
+                    U^{n+1} &= U^n + U^n z\v{b}^T (I - z A)^{-1} \v{e} \\
+                    U^{n+1} &= U^n(1 + z\v{b}^T (I - z A)^{-1} \v{e})
+                    \intertext{Therefore}
+                    R(z) &= 1 + z\v{b}^T (I - z A)^{-1} \v{e}
+                \end{align*}
+
+            \item[(c)]
+                The determinant of $A - \lambda I$ for this explicit case is
+                \[
+                    \det{A - \lambda I} = -\lambda^s.
+                \]
+                Now the Cayley Hamilton theorem states that
+                \[
+                    -A^s = 0I.
+                \]
+                Hence
+                \[
+                    A^s = 0I.
+                \]
+
+            \item[(d)]
+                Taylor expanding $(I - zA)^{-1}$ shows this.
+
+            \item[(e)]
+                Using parts (b) and (d) we can write $R(z)$ for any
+                explicit Runge-Kutta method as
+                \begin{align*}
+                    R(z) &= 1 + z\v{b}^T (I - z A)^{-1} \v{e} \\
+                    R(z) &= 1 + z\v{b}^T \sum{i = 0}{s-1}{z^i A^i} \v{e}
+                    \intertext{Let $a_i = \v{b}^T A^i \v{e} \in \RR$, then}
+                    R(z) &= 1 + \sum{i = 0}{s-1}{a_i z^{i+1}} \\
+                \end{align*}
+                This is a polynomial of a most degree $s$ as the last term in the sum
+                with have a power of $s$.
+        \end{enumerate}
 
 \end{enumerate}
 \end{document}
