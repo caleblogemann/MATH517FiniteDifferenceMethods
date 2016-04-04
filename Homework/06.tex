@@ -1,0 +1,82 @@
+\documentclass[11pt, oneside, titlepage]{article}
+\usepackage[letterpaper, margin=2cm]{geometry}
+\usepackage{MATH517}
+\usepackage{Calculus}
+
+\title{MATH 517 Finite Differences Homework 6}
+\author{Caleb Logemann}
+
+\begin{document}
+\maketitle
+
+%\lstinputlisting[language=Matlab]{H01_23.m}
+\begin{enumerate}
+    \item % #1
+        Consider the following method for solving the heat equation $u_t = u_{xx}$:
+        \[
+            U^{n+2}_i = U^n_i + \frac{2k}{h^2}\p{U^{n+1}_{i-1} - 2U^{n+1}_i + U^{n+1}_{i+1}}
+        \]
+        \begin{enumerate}
+            \item[(a)]
+                Determine the order of accuracy of this method (in both space
+                and time).
+
+                In order to find the order of accuracy of this method, the
+                local truncation error for this method must be found.
+                The local truncation error for this method is given as
+                \begin{align*}
+                    \tau &= \frac{1}{2k}\p{u(t + k, x) - u(t - k, x)} - \frac{1}{h^2}
+                        \p{u(t, x-h) - 2u(t, x) + u(t, x+h)}
+                \end{align*}
+                I will consider the time and space terms seperately at first
+                \begin{align*}
+                    u(t + k, x) &= u(t, x) + k u_t(t, x) + \frac{1}{2} k^2 u_{tt}(t, x) + \frac{1}{6}k^3 u_{ttt}(t, x) + O(k^4) \\
+                    u(t - k), x) &= u(t, x) - k u_t(t, x) + \frac{1}{2} k^2 u_{tt}(t, x) - \frac{1}{6}k^3 u_{ttt}(t, x) + O(k^4) \\
+                    \frac{1}{2k}\p{u(t + k, x) - u(t - k, x)} &= \frac{1}{2k}\p{2k u_t(t, x) + \frac{1}{3}k^3 u_{ttt}(t, x) + O(k^4)} \\
+                    &= u_t(t, x) + \frac{1}{6}k^2 u_{ttt}(t, x) + O(k^3) \\
+                    u(t, x-h) &= u(t, x) - h u_x(t, x) + \frac{1}{2} h^2 u_{xx}(t, x) - \frac{1}{6} h^3 u_{xxx}(t, x) + \frac{1}{24} h^4 u_{xxxx}(t, x) + O(h^5)
+                    u(t, x+h) &= u(t, x) + h u_x(t, x) + \frac{1}{2} h^2 u_{xx}(t, x) + \frac{1}{6} h^3 u_{xxx}(t, x) + \frac{1}{24} h^4 u_{xxxx}(t, x) + O(h^5)
+                    \frac{1}{h^2}\p{u(t, x-h) - 2u(t, x) + u(t, x+h)} &= \frac{1}{h^2} \p{h^2 u_{xx}(t, x) + \frac{1}{12} h^4 u_{xxxx} + O(h^6)}
+                    &= u_{xx}(t, x) + \frac{1}{12} h^2 u_{xxxx} + O(h^4)
+                \end{align*}
+                Note that in the spacial terms the 5th order error canceled out.
+
+                Using these two expressions the full truncation error is
+                \begin{align*}
+                    \tau &= u_t(t, x) + \frac{1}{6}k^2 u_{ttt}(t, x) + O(k^3) - u_{xx}(t, x) - \frac{1}{12} h^2 u_{xxxx} + O(h^4) \\
+                    \intertext{The heat equation states that $u_t(t, x) = u_{xx}(t, x)$}
+                    \tau &= \frac{1}{6}k^2 u_{ttt}(t, x) + O(k^3) - u_{xx}(t, x) - \frac{1}{12} h^2 u_{xxxx} + O(h^4) \\
+                    \tau &= O(k^2 + h^2)
+                \end{align*}
+
+            \item[(b)]
+                Suppose we take $k = \alpha h^2$ for some fixed $\alpha > 0$
+                and refine the grid.
+                For what values of $\alpha$ will this method be Lax-Richtmyer
+                stable and hence convergent?
+
+            \item[(c)]
+                Is this method useful?
+        \end{enumerate}
+
+    \item % #2
+        Consider the one-dimensional heat equation:
+        \begin{align*}
+            PDE &: u_t = \kappa u_{xx}\text{ for } (t, x) \in \br{0, T} \times \br{0, 1} \\
+            BCs &: u(t, 0) = g_0, \; u(t, 1) = g_1 \\
+            ICs &: u(0, x) = f(x)
+        \end{align*}
+        \begin{enumerate}
+            \item[(a)]
+                The m-file heat\_CN.m solves the heat equation
+                $u_t = \kappa u_{xx}$ using the Crank-Nicolson method.
+                Run this code and by changing the number of grid points,
+                confirm that it is second order accurate.
+                Create a table of errors for varius h values, and $k = 4h$ at
+                $T = 1$.
+
+            \item[(b)]
+        \end{enumerate}
+
+\end{enumerate}
+\end{document}
