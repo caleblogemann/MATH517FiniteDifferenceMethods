@@ -1,4 +1,4 @@
-function [h,k,err] = heat_CN(m)
+function [h,k,err] = heat_CN(m, a)
 %
 % heat_CN.m
 %
@@ -22,7 +22,7 @@ tfinal = 1;                % final time
 h = (bx-ax)/(m+1);         % h = delta x
 x = linspace(ax,bx,m+2)';  % note x(1)=0 and x(m+2)=1
                            % u(1)=g0 and u(m+2)=g1 are known from BC's
-k = 4*h;                  % time step
+k = a*h;                  % time step
 
 nsteps = round(tfinal / k);    % number of time steps
 %nplot = 1;      % plot solution every nplot time steps
@@ -49,7 +49,7 @@ u0 = utrue(x,0);
 % Each time step we solve MOL system U' = AU + g using the Trapezoidal method
 
 % set up matrices:
-r = (1/2) * kappa* k/(h^2);
+r = (1/2) * kappa * k/(h^2);
 e = ones(m,1);
 A = spdiags([e -2*e e], [-1 0 1], m, m);
 A1 = eye(m) - r * A;
@@ -68,7 +68,7 @@ plot(x,u,'b.-', xfine,ufine,'r')
 legend('computed','true')
 title('Initial data at time = 0')
 
-input('Hit <return> to continue  ');
+%input('Hit <return> to continue  ');
 
 
 % main time-stepping loop:

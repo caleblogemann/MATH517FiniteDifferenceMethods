@@ -1,6 +1,6 @@
-function [h,k,err] = heat_trbdf2(m, a)
+function [h,k,err] = heat_CN3(m, a)
 %
-% heat_trbdf2.m
+% heat_CN.m
 %
 % Solve u_t = kappa * u_{xx} on [ax,bx] with Dirichlet boundary conditions,
 % using the Crank-Nicolson method with m interior points.
@@ -14,7 +14,7 @@ function [h,k,err] = heat_trbdf2(m, a)
 clf              % clear graphics
 hold on          % Put all plots on the same graph (comment out if desired)
 
-ax = 0;
+ax = -1;
 bx = 1;
 kappa = .02;               % heat conduction coefficient:
 tfinal = 1;                % final time
@@ -34,26 +34,25 @@ if abs(k*nsteps - tfinal) > 1e-5
    disp(' ')
    disp(sprintf('WARNING *** k does not divide tfinal, k = %9.5e',k))
    disp(' ')
-end
+   end
+
 
 % true solution for comparison:
-% For Gaussian initial conditions u(x,0) = exp(-beta * (x-0.4)^2)
-beta = 150;
-utrue = @(x,t) exp(-(x-0.4).^2 / (4*kappa*t + 1/beta)) / sqrt(4*beta*kappa*t+1);
+utrue = @(x,t) 1/2*erfc(x/sqrt(4*kappa*t));
 
 % initial conditions:
-u0 = utrue(x,0);
+u0 = x < 0;
+
 
 % Each time step we solve MOL system U' = AU + g using the Trapezoidal method
 
 % set up matrices:
-r1 = kappa*k/(4*h^2);
-r2 = kappa*k/(3*h^2);
+r = (1/2) * kappa* k/(h^2);
 e = ones(m,1);
-Dx2 = spdiags([e -2*e e], [-1 0 1], m, m);
-A1 = eye(m) - r1 * Dx2;
-A2 = eye(m) + r1 * Dx2;
-A3 = eye(m) - r2 * Dx2;
+A = spdiags([e -2*e e], [-1 0 1], m, m);
+A1 = eye(m) - r * A;
+A2 = eye(m) + r * A;
+
 
 % initial data on fine grid for plotting:
 xfine = linspace(ax,bx,1001);
@@ -73,33 +72,22 @@ title('Initial data at time = 0')
 for n = 1:nsteps
      tnp = tn + k;   % = t_{n+1}
 
-     % boundary values u(0,t) and u(1,t) at times tn, tn + k/2, and tnp:
+     % boundary values u(0,t) and u(1,t) at times tn and tnp:
+
      g0n = u(1);
      g1n = u(m+2);
-     g0npHalf = utrue(ax,tn+k/2);
-     g1npHalf = utrue(bx,tn+k/2);
      g0np = utrue(ax,tnp);
      g1np = utrue(bx,tnp);
 
      % compute right hand side for linear system:
      uint = u(2:(m+1));   % interior points (unknowns)
-
-     % first stage
      rhs = A2*uint;
      % fix-up right hand side using BC's (i.e. add vector g to A2*uint)
-     rhs(1) = rhs(1) + r1*(g0n + g0npHalf);
-     rhs(m) = rhs(m) + r1*(g1n + g1npHalf);
+     rhs(1) = rhs(1) + r*(g0n + g0np);
+     rhs(m) = rhs(m) + r*(g1n + g1np);
 
-     % solve linear system for first stage:
-     ustar = A1\rhs;
-
-     % second stage
-     rhs = 1/3 * (4*ustar - uint);
-     rhs(1) = rhs(1) + r2 * g0np;
-     rhs(m) = rhs(m) + r2 * g1np;
-
-     % solve linear system for second stage
-     uint = A3\rhs;
+     % solve linear system:
+     uint = A1\rhs;
 
      % augment with boundary values:
      u = [g0np; uint; g1np];
@@ -113,7 +101,7 @@ for n = 1:nsteps
         err = max(abs(u-utrue(x,tnp)));
         disp(sprintf('at time t = %9.5e  max error =  %9.5e',tnp,err))
         if n<nsteps, input('Hit <return> to continue  '); end;
-    end
+        end
 
      tn = tnp;   % for next time step
-end
+     end
