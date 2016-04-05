@@ -1,4 +1,4 @@
-function [h,k,err] = heat_CN(m)
+function [h,k,err] = heat_CN2(m)
 %
 % heat_CN.m
 %
@@ -14,7 +14,7 @@ function [h,k,err] = heat_CN(m)
 clf              % clear graphics
 hold on          % Put all plots on the same graph (comment out if desired)
 
-ax = 0;
+ax = -1;
 bx = 1;
 kappa = .02;               % heat conduction coefficient:
 tfinal = 1;                % final time
@@ -39,11 +39,10 @@ if abs(k*nsteps - tfinal) > 1e-5
 
 % true solution for comparison:
 % For Gaussian initial conditions u(x,0) = exp(-beta * (x-0.4)^2)
-beta = 150;
-utrue = @(x,t) exp(-(x-0.4).^2 / (4*kappa*t + 1/beta)) / sqrt(4*beta*kappa*t+1);
+utrue = @(x,t) 1/2*erfc(x/sqrt(4*kappa*t));
 
 % initial conditions:
-u0 = utrue(x,0);
+u0 = x < 0;
 
 
 % Each time step we solve MOL system U' = AU + g using the Trapezoidal method

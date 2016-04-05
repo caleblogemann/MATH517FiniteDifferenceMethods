@@ -1,6 +1,6 @@
-function [h,k,err] = heat_CN(m)
+function [h,k,err] = heat_trbdf2(m)
 %
-% heat_CN.m
+% heat_trbdf2.m
 %
 % Solve u_t = kappa * u_{xx} on [ax,bx] with Dirichlet boundary conditions,
 % using the Crank-Nicolson method with m interior points.
@@ -34,8 +34,7 @@ if abs(k*nsteps - tfinal) > 1e-5
    disp(' ')
    disp(sprintf('WARNING *** k does not divide tfinal, k = %9.5e',k))
    disp(' ')
-   end
-
+end
 
 % true solution for comparison:
 % For Gaussian initial conditions u(x,0) = exp(-beta * (x-0.4)^2)
@@ -45,7 +44,6 @@ utrue = @(x,t) exp(-(x-0.4).^2 / (4*kappa*t + 1/beta)) / sqrt(4*beta*kappa*t+1);
 % initial conditions:
 u0 = utrue(x,0);
 
-
 % Each time step we solve MOL system U' = AU + g using the Trapezoidal method
 
 % set up matrices:
@@ -54,7 +52,6 @@ e = ones(m,1);
 A = spdiags([e -2*e e], [-1 0 1], m, m);
 A1 = eye(m) - r * A;
 A2 = eye(m) + r * A;
-
 
 % initial data on fine grid for plotting:
 xfine = linspace(ax,bx,1001);
@@ -70,9 +67,7 @@ title('Initial data at time = 0')
 
 input('Hit <return> to continue  ');
 
-
 % main time-stepping loop:
-
 for n = 1:nsteps
      tnp = tn + k;   % = t_{n+1}
 
@@ -108,4 +103,4 @@ for n = 1:nsteps
         end
 
      tn = tnp;   % for next time step
-     end
+end
