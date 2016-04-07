@@ -55,8 +55,57 @@
                 For what values of $\alpha$ will this method be Lax-Richtmyer
                 stable and hence convergent?
 
+                This method will be Lax-Richtmyer stable if the eigenvalues of
+                the matrix for $B$ are inside the region of absolute
+                stability for the time stepping method.
+                Equivalently this method will be Lax-Richtmyer stable if $\norm{B(k)^n} \le C_T$
+                for all $k > 0$ and integers $n$ such that $kn \le T$.
+                For this method
+                \[
+                    B = I + 2k D^2_x
+                \]
+                In this method we are using the Leap-Frog time stepping method,
+                and the 2nd order central finite difference for the spatial derivative.
+
+                The eigenvalues for the spatial derivative are 
+                \[
+                    \lambda_p = \frac{2}{h^2}\p{\cos{p \pi h} - 1}.
+                \]
+                The right hand side matrix is $B = I + 2k D^2_x$, so the
+                eigenvalues of the right hand side are
+                \[
+                    \lambda_p = 1 + \frac{4k}{h^2}\p{\cos{p \pi h} - 1}
+                \]
+                Since $k = \alpha h^2$
+                \[
+                    \lambda_p = 1 + 4\alpha\cos{p \pi h} - 4\alpha
+                \]
+                Theerefore the maximum eigenvalue or spectral radius of $B$
+                is
+                \[
+                    \rho(B) = \lambda_1 = 1 + 4\alpha\cos{\pi h} - 4\alpha
+                \]
+
+                Therefore for Lax-Richtmyer stability
+                \begin{align*}
+                    \norm{B(k)^n} &= \rho(B)^n \\
+                    &= \p{1 + 4\alpha\cos{\pi h} - 4\alpha}^n \\
+                    &= \p{1 + 4\p{\cos{\pi h} - 1}\alpha}^n
+                    \intertext{If $\alpha = \beta k$, then}
+                    &= \p{1 + 4\p{\cos{\pi h} - 1}\beta k}^n \\
+                    &= \p{1 + \gamma k}^n
+                \end{align*}
+                where $\gamma = 4\p{\cos{\pi h} - 1}\beta$.
+                Therefore if $\alpha = O(k) = O(h^2)$, then this method
+                is Lax-Richtmyer stable.
+
             \item[(c)]
                 Is this method useful?
+
+                This method isn't useful because the time step, $k$, has to scale
+                with $h^4$, which means that the time step must be extremely small
+                to guarantee stability.
+                This makes the method extremely inefficient.
         \end{enumerate}
 
     \item % #2 Done
@@ -251,6 +300,7 @@
                 \end{align*}
 
             \item[(b)]
+                
         \end{enumerate}
 
 \end{enumerate}
