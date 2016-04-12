@@ -1,0 +1,42 @@
+\documentclass[11pt, oneside, titlepage]{article}
+\usepackage[letterpaper, margin=2cm]{geometry}
+\usepackage{MATH517}
+\usepackage{Calculus}
+
+\title{MATH 517 Finite Differences Homework 7}
+\author{Caleb Logemann}
+
+\begin{document}
+\maketitle
+
+%\lstinputlisting[language=Matlab]{H01_23.m}
+\begin{enumerate}
+    \item % #1
+        \begin{enumerate}
+            \item[(a)]
+                Implement the alternating direction implicit (ADI) scheme for
+                this problem.
+                Use the backslash operator in MATLAB to invert the necessary
+                matrices.
+
+            \item[(b)]
+                Do a convergence study of your method for the following exact
+                solution:
+                \[
+                    u(t, x, y) = e^{-32 \pi^2 t} \cos{4 \pi x} \cos{4\pi y}
+                \]
+
+            \item[(c)]
+                For the problem in (b), put a tic command immediately before you
+                solve the first tridiagonal system, and a toc command
+                immediately after the second tridiagonal solve.
+                Create a table of run times for various $N$ in a single timestep 
+                of your solver.
+                Comment on your results.
+        \end{enumerate}
+
+    \item % #2
+    \item % #3
+    \item % #4
+\end{enumerate}
+\end{document}
