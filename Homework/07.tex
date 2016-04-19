@@ -36,6 +36,70 @@
         \end{enumerate}
 
     \item % #2
+        Third Order Lax-Wendroff
+        \begin{enumerate}
+            \item[(a)]
+                Construct a third order accurate Lax-Wendroff-type method for
+                the advection equation.
+
+                First I will expand $u(t + k, x)$ using a Taylor series.
+                \[
+                    u(t + k, x) = u(t, x) + k u_t(t, x) + \frac{k^2}{2}
+                        u_{tt}(t, x) + \frac{k^3}{6} u_{ttt}(t, x) + O(k^4)
+                \]
+                The advection equation states that $u_t = -a u_x$, therefore it
+                can also be states that $u_{tt} = a^2 u_{xx}$ and
+                $u_{ttt} = -a^3 u_{xxx}$.
+                Thus the Taylor expansion for the advection equation becomes
+                \[
+                    u(t+k,x) = u(t, x)  - ak u_x + \frac{(ak)^2}{2} u_{xx}
+                        - \frac{(ak)^3}{6} u_{xxx} + O(k^4)
+                \]
+
+                In order to approximate the spacial derivatives, I will create
+                a cubic polynomial that interpolates $U_{j-2}^n$, $U_{j-1}^n$,
+                $U_j^n$ and $U_{j+1}^n$.
+                I will express this polynomial in the form
+                \[
+                    p(x) = a(x - x_j)^3 + b(x - x_j)^2 + c(x - x_j) + d.
+                \]
+                This form will make finding the derivatives, $u_x(t^n, x_i)$,
+                $u_{xx}(t^n, x_i)$, and $u_{xxx}(t^n, x_i)$, easier in the
+                future.
+                In order to find the coefficients $a$, $b$, $c$, and $d$, the
+                following four equations must be solved.
+                \begin{align*}
+                    p(x_j - 2h) &= a(-2h)^3 + b(-2h)^2 + c(-2h) + d = U_{j-2}^n
+                    p(x_j - h) &= a(-h)^3 + b(-h)^2 + c(-h) + d = U_{j-1}^n
+                    p(x_j) &= d = U_{j}^n
+                    p(x_j + h) &= a(h)^3 + b(h)^2 + c(h) + d = U_{j+1}^n
+                \end{align*}
+                After solving these equations in Mathematica, I found the
+                coefficients to be
+                \begin{align*}
+                    a &= -\frac{U_{j-2}^n - 3U_{j-1}^n + 3U_j^n - U_{j+1}^n}{6h^3}\\
+                    b &= \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{2h^2}\\
+                    c &= \frac{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}{6h}\\
+                    d &= U_j^n \\
+                \end{align*}
+                Now note that $u(t^n, x) \approx p(x)$ when $x \in \br{x-2h, x+h}$.
+                Therefore
+                \begin{align*}
+                    u_x(t^n, x_j) \approx p'(x_j) = c \\
+                    u_{xx}(t^n, x_j) \approx p''(x_j) = 2b \\
+                    u_{xxx}(t^n, x_j) \approx p'''(x_j) = 6a
+                \end{align*}
+
+
+
+
+
+                In other words, a cubic polynomial that interpolates $(x_{j-2}, u(t^n, x_{j-2}))$
+                following
+
+
+            \item[(b)]
+        \end{enumerate}
     \item % #3
     \item % #4
 \end{enumerate}
