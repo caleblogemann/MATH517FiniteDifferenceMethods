@@ -2,6 +2,8 @@
 \usepackage[letterpaper, margin=2cm]{geometry}
 \usepackage{MATH517}
 \usepackage{Calculus}
+\usepackage{booktabs}
+
 
 \title{MATH 517 Finite Differences Homework 7}
 \author{Caleb Logemann}
@@ -11,13 +13,15 @@
 
 %\lstinputlisting[language=Matlab]{H01_23.m}
 \begin{enumerate}
-    \item % #1
+    \item % #1 Done
         \begin{enumerate}
             \item[(a)]
                 Implement the alternating direction implicit (ADI) scheme for
                 this problem.
                 Use the backslash operator in MATLAB to invert the necessary
                 matrices.
+
+                \lstinputlisting[language=Matlab]{ADI.m}
 
             \item[(b)]
                 Do a convergence study of your method for the following exact
@@ -26,6 +30,21 @@
                     u(t, x, y) = e^{-32 \pi^2 t} \cos{4 \pi x} \cos{4\pi y}
                 \]
 
+                \lstinputlisting[language=Matlab, lastline=18]{H07.m}
+
+                \begin{verbatim}
+                    ans = 
+
+                        hRatios    errorRatios    order 
+                        _______    ___________    ______
+
+                        2           8.132         3.0236
+                        2          9.4968         3.2474
+                        2          12.937         3.6935
+                        2          15.027         3.9095
+                \end{verbatim}
+
+
             \item[(c)]
                 For the problem in (b), put a tic command immediately before you
                 solve the first tridiagonal system, and a toc command
@@ -33,6 +52,29 @@
                 Create a table of run times for various $N$ in a single timestep 
                 of your solver.
                 Comment on your results.
+
+                \begin{center}
+                    \begin{tabular}{cc}
+                        \toprule
+                        N & time (sec) \\
+                        \midrule
+                        19 & 0.002496 \\
+                        39 & 0.002069 \\
+                        79 & 0.005204 \\
+                        159 & 0.011467 \\
+                        319 & 0.054771 \\
+                        639 & 0.221379 \\
+                        \bottomrule
+                    \end{tabular}
+                \end{center}
+                The time for one iteration seems to be growing with $N^2$, or at
+                the very least it is growing faster than $N$ is growing.
+                When $N$ doubles the time for one iteration increases by more than
+                2 times probably closer to 4 times.
+                I believe that the time is growing by $N^2$ because the size of
+                the system being solved is $N^2$, because we are in 2 dimensions.
+                This seems to indicate that this method will not scale well to large
+                problems.
         \end{enumerate}
 
     \item % #2
@@ -69,18 +111,18 @@
                 In order to find the coefficients $a$, $b$, $c$, and $d$, the
                 following four equations must be solved.
                 \begin{align*}
-                    p(x_j - 2h) &= a(-2h)^3 + b(-2h)^2 + c(-2h) + d = U_{j-2}^n
-                    p(x_j - h) &= a(-h)^3 + b(-h)^2 + c(-h) + d = U_{j-1}^n
-                    p(x_j) &= d = U_{j}^n
-                    p(x_j + h) &= a(h)^3 + b(h)^2 + c(h) + d = U_{j+1}^n
+                    p(x_j - 2h) &= a(-2h)^3 + b(-2h)^2 + c(-2h) + d = U_{j-2}^n \\
+                    p(x_j - h) &= a(-h)^3 + b(-h)^2 + c(-h) + d = U_{j-1}^n \\
+                    p(x_j) &= d = U_{j}^n \\
+                    p(x_j + h) &= a(h)^3 + b(h)^2 + c(h) + d = U_{j+1}^n \\
                 \end{align*}
                 After solving these equations in Mathematica, I found the
                 coefficients to be
                 \begin{align*}
                     a &= -\frac{U_{j-2}^n - 3U_{j-1}^n + 3U_j^n - U_{j+1}^n}{6h^3}\\
                     b &= \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{2h^2}\\
-                    c &= \frac{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}{6h}\\
-                    d &= U_j^n \\
+                    c &= \frac{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}{6h} \\
+                    d &= U_j^n
                 \end{align*}
                 Now note that $u(t^n, x) \approx p(x)$ when $x \in \br{x-2h, x+h}$.
                 Therefore
@@ -90,17 +132,72 @@
                     u_{xxx}(t^n, x_j) \approx p'''(x_j) = 6a
                 \end{align*}
 
+                Now substituting into the Taylor expansion to actually create a
+                numerical method we get
+                \begin{align*}
+                    U_j^{n+1} &= U_j^n - \frac{ak}{6h} \p{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n} \\
+                        &+ \frac{(ak)^2}{2h^2} \p{U_{j-1}^n - 2U_j^n + U_{j+1}^n} \\
+                        &+ \frac{(ak)^3}{6h^3} \p{U_{j-2}^n - 3U_{j-1}^n + 3U_j^n - U_{j+1}^n}
+                \end{align*}
 
+            \item[(b)]
+                Verify that the truncation error is $O(k^3)$ if $h = O(k)$.
+        \end{enumerate}
 
+    \item % #3
+        Third-Order Method of Lines with RK3: \\
+        The following method is a third order accurate Runge-Kutta method for
+        $u' = f(u):$
+        \begin{align*}
+            U^{n+1} = U^n + \frac{k}{9}\p{2Y_1 + 3Y_2 + 4Y_3} \\
+            Y_1 = f\p{U^n}, \quad
+            Y_2 = f\p{U^n + \frac{k}{2} Y_1}, \quad
+            Y_3 = f\p{U^n + \frac{3k}{4} Y_2}
+        \end{align*}
+        \begin{enumerate}
+            \item[(a)]
+                Construct a third order accurate method for the advection equation.
 
-
-                In other words, a cubic polynomial that interpolates $(x_{j-2}, u(t^n, x_{j-2}))$
-                following
+                In order to approximate the first derivative, $u_x$ I will use
+                the interpolation polynomial that I found in problem 2:
+                \[
+                    p(x) = a(x - x_j)^3 + b(x - x_j)^2 + c(x - x_j) + d.
+                \]
+                where
+                \begin{align*}
+                    a &= -\frac{U_{j-2}^n - 3U_{j-1}^n + 3U_j^n - U_{j+1}^n}{6h^3}\\
+                    b &= \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{2h^2}\\
+                    c &= \frac{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}{6h} \\
+                    d &= U_j^n.
+                \end{align*}
+                Originally the advection equation states, on the spacially
+                discretized system, that
+                \[
+                    U_j'(t) = a \frac{\mathrm{d}}{\mathrm{d}x} U_j(t)
+                \]
+                However we can now replace $\frac{\mathrm{d}}{\mathrm{d}x} U_j(t)$
+                with $\frac{\mathrm{d}}{\mathrm{d}x} p(x)$ at $x = x_j$, which is
+                \[
+                    \frac{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}{6h}.
+                \]
+                Now for each $j$, there is an ODE of the form
+                \[
+                    U_j'(t) = \frac{a}{6h} \p{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}
+                \]
+                Now the RK3 method can be applied where
+                \[
+                    f(U^n) = \frac{a}{6h} \p{U_{j-2}^n - 6U_{j-1}^n + 3U_j^n + 2U_{j+1}^n}
+                \]
 
 
             \item[(b)]
+                Verify that the truncation error is $O(k^3)$ if $k = O(h)$
+
+            \item[(c)]
+
         \end{enumerate}
-    \item % #3
+
     \item % #4
+
 \end{enumerate}
 \end{document}

@@ -49,7 +49,7 @@ function [u, Ux, Uy, k] = ADI(N, T, f, g)
     % right boundary in row-wise ordering
     % ie when either x or y is one
     oneIndices = N:N:N^2;
-    for n = 1:Nt
+    for n = 1:1
         % u starts in column-wise ordering
         % First stage
         % (I + k/2 Dy2)*u
@@ -68,6 +68,7 @@ function [u, Ux, Uy, k] = ADI(N, T, f, g)
         rhs(oneIndices) = rhs(oneIndices) + rightBoundary';
         % solve for uStar which approximates u at t = tn + k/2
         % uStar is in row-wise ordering
+        tic
         uStar = (I - k/2*D)\rhs;
 
         % second stage
@@ -87,5 +88,6 @@ function [u, Ux, Uy, k] = ADI(N, T, f, g)
         % solve for u at time t = tn + k
         % u is in column wise ordering
         u(:,n+1) = (I - k/2*D)\rhs;
+        toc
     end
 end
