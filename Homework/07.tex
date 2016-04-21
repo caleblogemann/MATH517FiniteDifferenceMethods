@@ -198,6 +198,80 @@
         \end{enumerate}
 
     \item % #4
+        First I will implement the Lax-Wendroff method.
 
+        \lstinputlisting[language=Matlab]{LaxWendroff3.m}
+        Testing both initial conditions
+        \lstinputlisting[language=Matlab, firstline=20, lastline=57]{H07.m}
+
+        \begin{verbatim}
+            ans = 
+
+                hRatios    errorRatios     order 
+                _______    ___________    _______
+
+                2          1.5373         0.62036
+                2          1.9039         0.92894
+                2          1.9901          0.9928
+                2          1.9993         0.99951
+                2               2         0.99999
+                2               2               1
+                2               2               1
+
+
+            ans = 
+
+                hRatios    errorRatios     order 
+                _______    ___________    _______
+
+                2          0.44201        -1.1778
+                2           1.0798         0.1108
+                2           1.4695        0.55536
+                2           1.7229        0.78484
+                2           1.9306        0.94903
+                2            1.984         0.9884
+                2           1.9987        0.99906
+        \end{verbatim}
+
+        Next I will implement the third-order Runge Kutta method.
+        \lstinputlisting[language=Matlab]{RungeKutta3.m}
+        \lstinputlisting[language=Matlab]{uxFun.m}
+        Testing both initial conditions
+        \lstinputlisting[language=Matlab, firstline=59]{H07.m}
+
+        \begin{verbatim}
+            ans = 
+
+                hRatios    errorRatios     order 
+                _______    ___________    _______
+
+                2          1.6631         0.73389
+                2          1.8306         0.87232
+                2          2.1462          1.1018
+                2          2.0825          1.0583
+                2          2.0244          1.0175
+                2          2.0062          1.0045
+                2          2.0016          1.0011
+
+
+            ans = 
+
+                hRatios    errorRatios      order   
+                _______    ___________    __________
+
+                2          0.5243           -0.93154
+                2          1.0001         0.00010375
+                2          1.0191           0.027309
+                2          1.6093            0.68644
+                2          2.7795             1.4748
+                2          2.2621             1.1776
+                2           2.027             1.0193           
+        \end{verbatim}
+
+        For both of these methods I only got first order convergence, with the
+        second set of initial conditions converging slower than the first set of
+        initial conditions.
+        I felt like both were pretty easy to implement.
+        The third order Runge Kutta was probably slightly easier to derive.
 \end{enumerate}
 \end{document}

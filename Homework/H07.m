@@ -4,7 +4,7 @@
     T = 1;
     E = [];
     H = [];
-    for N = 10*2.^(6:10) - 1
+    for N = 10*2.^(1:5) - 1
         [u, Ux, Uy, k] = ADI(N, 1, f, uExact);
         % create exact solution
         t = @(n) n*k;
@@ -81,7 +81,7 @@
     f = @(x) uExact(0,x);
     E = [];
     H = [];
-    for N = 10*2.^(4:10) - 1
+    for N = 10*2.^(1:8) - 1
         [u, h, k] = RungeKutta3(a, N, T, f);
         % create exact solution
         t = @(n) n*k;
